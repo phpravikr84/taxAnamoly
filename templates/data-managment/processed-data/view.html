@@ -1,0 +1,51 @@
+{% extends '../../layouts/master.html' %}
+{% block body %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4 custom-header">Data Management</h1>
+    <ol class="breadcrumb mb-4 custom-breadcrumb">
+        <li class="breadcrumb-item active">Process Data / View</li>
+    </ol>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Process Data View
+        </div>
+        <div class="card-body">
+            <table id="datatablesSimple">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Office</th>
+                        <th>Age</th>
+                        <th>Start date</th>
+                        <th>Salary</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Office</th>
+                        <th>Age</th>
+                        <th>Start date</th>
+                        <th>Salary</th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td>{{ record.name }}</td>
+                        <td>{{ record.position }}</td>
+                        <td>{{ record.office }}</td>
+                        <td>{{ record.age }}</td>
+                        <td>{{ record.start_date }}</td>
+                        <td>{{ record.salary }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock body %}

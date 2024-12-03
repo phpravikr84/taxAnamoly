@@ -1,0 +1,103 @@
+<div id="layoutSidenav_nav">
+    <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+        <div class="sb-sidenav-menu">
+            <div class="nav">
+                <div class="sb-sidenav-menu-heading">Main</div>
+                <a class="nav-link {% if request.path == '/dashboard/' %} active {% endif %}" href="{% url 'dashboard' %}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    Dashboard
+                </a>
+                
+                <a class="nav-link collapsed {% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/process-data' %} active {% endif %}" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                    <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                    Data Management
+                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse {% if request.path|slice:":25" == '/data-management/raw-data' %} show {% endif %}" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                    <nav class="sb-sidenav-menu-nested nav">
+                        <a class="nav-link {% if request.path == '/data-management/raw-data/upload/' %} active {% endif %}" href="{% url 'data-management-upload' %}">Upload Raw Data</a>
+                        <a class="nav-link {% if request.path == '/data-management/raw-data/' %} active {% endif %}" href="{% url 'data-management-view' %}">View Raw Data</a>
+                        <a class="nav-link {% if request.path|slice:":23" == '/data-management/process-data' %} active {% endif %}" href="{% url 'data-management-processed' %}">Processed Data</a>
+                    </nav>
+                </div>
+                
+                <a class="nav-link collapsed {% if request.path|slice:":19" == '/analytics/predicted' %} active {% endif %}" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                    <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                    Analytics
+                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse {% if request.path|slice:":19" == '/analytics/predicted' %} show {% endif %}" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                    <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                        <a class="nav-link {% if request.path == '/analytics/predicted' %} active {% endif %}" href="#">Predicted Results</a>
+                        <a class="nav-link {% if request.path == '/analytics/fraud' %} active {% endif %}" href="#">Fraud Analytics Report</a>
+                    </nav>
+                </div>
+                
+                <div class="sb-sidenav-menu-heading">Settings</div>
+                <a class="nav-link {% if request.path == '/charts' %} active {% endif %}" href="charts.html">
+                    <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                    Data Column Settings
+                </a>
+                <a class="nav-link {% if request.path == '/tables' %} active {% endif %}" href="tables.html">
+                    <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                    API Management
+                </a>
+            </div>
+        </div>
+        <div class="sb-sidenav-footer">
+            <div class="small">
+                <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+                        <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+                    </svg>
+                </span>
+                <div id="MyClockDisplay" class="clock" onload="showTime()"></div>
+            </div>
+        </div>
+    </nav>
+</div>
+
+
+
+<!-- Add the following JavaScript to handle the active class toggling -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navLinks = document.querySelectorAll('.nav-link');
+        const collapsibleParents = document.querySelectorAll('.collapse');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function () {
+                // Remove 'active' class from all links and their parent items
+                navLinks.forEach(navLink => navLink.classList.remove('active'));
+                collapsibleParents.forEach(parent => parent.classList.remove('show'));
+
+                // Add 'active' class to the clicked link
+                this.classList.add('active');
+                
+                // If the link has a parent (e.g., for nested links), add 'active' to it as well
+                const parentLink = this.closest('.nav-link');
+                if (parentLink) {
+                    parentLink.classList.add('active');
+                }
+
+                // If the clicked link has a collapse target, show the collapse
+                const collapseTarget = this.getAttribute('data-bs-target');
+                if (collapseTarget) {
+                    document.querySelector(collapseTarget).classList.add('show');
+                }
+            });
+        });
+    });
+</script>
+
+<!-- Add custom CSS for transparent background on active child -->
+<style>
+    .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.3); /* White background with transparency */
+    }
+
+    .nav-link.active .sb-nav-link-icon {
+        color: #036b48; /* Customize icon color when active */
+    }
+</style>

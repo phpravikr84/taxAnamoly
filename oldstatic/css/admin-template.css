@@ -1,0 +1,185 @@
+:root {
+    --bs-primary: #6F42C1;
+    --bs-primary-alt: #007BFF; /* Alternative primary */
+    --bs-secondary: #0DCAF0;
+    --bs-info: #17A2B8;
+    --bs-success: #00CCCC;
+    --bs-warning: #FFC107; /* Keeping default warning */
+    --bs-danger: #DC3545; /* Keeping default danger */
+    --bs-light: #F8F9FA;
+    --bs-dark: #343A40;
+  }
+  
+  /* Customize buttons */
+  .btn-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+  }
+  .btn-primary:hover, .btn-primary:focus {
+    background-color: var(--bs-primary-alt);
+    border-color: var(--bs-primary-alt);
+  }
+  .btn-secondary {
+    background-color: var(--bs-secondary);
+    border-color: var(--bs-secondary);
+  }
+  .btn-info {
+    background-color: var(--bs-info);
+    border-color: var(--bs-info);
+  }
+  .btn-success {
+    background-color: var(--bs-success);
+    border-color: var(--bs-success);
+  }
+  
+  /* Customize alerts */
+  .alert-primary {
+    background-color: var(--bs-primary);
+    color: #fff;
+  }
+  .alert-secondary {
+    background-color: var(--bs-secondary);
+    color: #fff;
+  }
+  .alert-info {
+    background-color: var(--bs-info);
+    color: #fff;
+  }
+  .alert-success {
+    background-color: var(--bs-success);
+    color: #fff;
+  }
+  
+  /* Customize navbar */
+  .navbar {
+    background-color: var(--bs-primary);
+  }
+  .navbar .nav-link {
+    color: #fff;
+  }
+  .navbar .nav-link:hover {
+    color: var(--bs-secondary);
+  }
+  
+  /* Customize cards */
+  .card {
+    border: 1px solid var(--bs-primary);
+  }
+  .card-header {
+    background-color: var(--bs-primary);
+    color: #fff;
+  }
+  .card-body {
+    background-color: #f9f9f9;
+  }
+  
+  /* Customize table headers */
+  .table thead th {
+    background-color: var(--bs-secondary);
+    color: #fff;
+  }
+  .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 204, 204, 0.1); /* Supporting color with opacity */
+  }
+  
+  /* General utility classes */
+  .bg-primary {
+    background-color: var(--bs-primary) !important;
+  }
+  .text-primary {
+    color: var(--bs-primary) !important;
+  }
+  .bg-secondary {
+    background-color: var(--bs-secondary) !important;
+  }
+  .text-secondary {
+    color: var(--bs-secondary) !important;
+  }
+  .bg-info {
+    background-color: var(--bs-info) !important;
+  }
+  .text-info {
+    color: var(--bs-info) !important;
+  }
+  .bg-success {
+    background-color: var(--bs-success) !important;
+  }
+  .text-success {
+    color: var(--bs-success) !important;
+  }
+
+  .sb-sidenav-dark {
+    background: linear-gradient(135deg, #6F42C1, #007BFF);
+    color: rgba(255, 255, 255, 0.9); /* Adjusted for better contrast */
+  }
+  
+  .sb-sidenav-dark .nav-link {
+    color: rgba(255, 255, 255, 0.8); /* Navigation links color */
+  }
+  
+  .sb-sidenav-dark .nav-link:hover {
+    color: #00CCCC; /* Supporting color for hover */
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle background for hover */
+  }
+  
+  .sb-sidenav-dark .nav-link.active {
+    background-color: #17A2B8; /* Supporting active link background */
+    color: #fff; /* Active link text color */
+  }
+
+  .sb-sidenav-footer  {
+    background: linear-gradient(135deg, #6F42C1, #007BFF);
+    color: rgba(255, 255, 255, 0.9); /* Adjusted for better contrast */
+  }
+
+  .card-body {
+    color: #8B8680; /* White text for contrast */
+    border: none; /* Remove any borders if necessary */
+    padding: 1rem; /* Ensure consistent padding */
+    border-radius: 0.25rem; /* Ensure a smooth card look */
+  }
+  /* Custom Header Style */
+.custom-header {
+  font-family: 'Roboto', sans-serif; /* Professional font */
+  font-weight: 600; /* Bold header for prominence */
+  text-transform: uppercase; /* Uppercase for emphasis */
+  letter-spacing: 1px; /* Slight letter spacing for readability */
+  margin-bottom: 20px; /* Space below the header */
+}
+
+/* Custom Breadcrumb Style */
+.custom-breadcrumb {
+  background-color: #f8f9fa; /* Light background for breadcrumb */
+  border-radius: 0.25rem; /* Rounded corners */
+  padding: 10px 15px; /* Padding for better spacing */
+  font-family: 'Roboto', sans-serif; /* Match header font */
+  font-size: 14px; /* Smaller font for subtlety */
+  color: #0097a7; /* Bootstrap primary tone for text */
+}
+
+.custom-breadcrumb .breadcrumb-item.active {
+  font-weight: 500; /* Slightly bolder for active item */
+}
+
+.bg-radial-circuit {
+  /* Set the background gradient */
+  background: radial-gradient(circle, #6F42C1, #007BFF);
+
+  /* Overlay a circuit pattern */
+  background-image: 
+      radial-gradient(circle, #6F42C1, #007BFF),
+      url('https://www.transparenttextures.com/patterns/circuit-board.png'); /* Replace with your circuit light bg image */
+  
+  /* Adjust overlay blending */
+  background-blend-mode: overlay;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  /* Full height for flexibility */
+  height: 100vh;
+  width: 100%;
+}
+
+
+  
+  

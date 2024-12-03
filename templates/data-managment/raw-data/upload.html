@@ -1,0 +1,26 @@
+{% extends '../../layouts/master.html' %}
+{% block body %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4 custom-header">Data Management</h1>
+    <ol class="breadcrumb mb-4 custom-breadcrumb">
+        <li class="breadcrumb-item active">Raw Data - Upload</li>
+    </ol>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Raw Data
+        </div>
+        <div class="card-body">
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-12 text-center">
+                      <h1>Upload Test CSV</h1>
+                      <form method="POST" enctype="multipart/form-data" class="text-center">
+                          {% csrf_token %}
+                          <button class="btn btn-primary" type="submit">Upload and Process</button>
+                      </form>
+                </div>
+              </div>
+        </div>
+    </div>
+</div>
+{% endblock body %}
