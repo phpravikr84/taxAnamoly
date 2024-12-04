@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -87,6 +88,9 @@ DATABASES = {
         'HOST' : config('DB_HOST'),
     }
 }
+
+# settings.py
+AUTH_USER_MODEL = 'accounts.User'  # Replace with your custom User model
 
 
 # Password validation
