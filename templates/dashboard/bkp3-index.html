@@ -56,79 +56,68 @@
         <div class="col-md-6">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header">
-                    <i class="fas fa-chart-line me-1"></i> Sales Records
+                    <i class="fas fa-chart-line me-1"></i> Sales Chart
                 </div>
                 <div class="card-body">
+                    <div id="sales-chart"></div>
+                </div>
+                <div class="card-footer">
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>Month</th>
-                                <th>Net Profit</th>
-                                <th>Revenue</th>
-                                <th>Free Cash Flows</th>
+                                <th>Sales</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>January</td>
                                 <td>$5000</td>
-                                <td>$8000</td>
-                                <td>$3000</td>
                             </tr>
                             <tr>
                                 <td>February</td>
                                 <td>$7000</td>
-                                <td>$9500</td>
-                                <td>$4000</td>
-                            </tr>
-                            <tr>
-                                <td>March</td>
-                                <td>$6000</td>
-                                <td>$10000</td>
-                                <td>$3500</td>
-                            </tr>
-                            <tr>
-                                <td>April</td>
-                                <td>$7500</td>
-                                <td>$11000</td>
-                                <td>$4500</td>
-                            </tr>
-                            <tr>
-                                <td>May</td>
-                                <td>$8000</td>
-                                <td>$12000</td>
-                                <td>$5000</td>
-                            </tr>
-                            <tr>
-                                <td>June</td>
-                                <td>$8000</td>
-                                <td>$12000</td>
-                                <td>$5000</td>
-                            </tr>
-                            <tr>
-                                <td>July</td>
-                                <td>$8000</td>
-                                <td>$12000</td>
-                                <td>$5000</td>
                             </tr>
                         </tbody>
-                    </table>                    
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header">
-                    <i class="fas fa-chart-line me-1"></i> Sales Chart
-                </div>
-                <div class="card-body">
-                    <div id="sales-chart"></div>
+                    </table>
                 </div>
             </div>
         </div>
 
-          <!-- COGS Chart -->
-          <div class="col-md-6">
+        <!-- Revenue Chart -->
+        <div class="col-md-6">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header">
+                    <i class="fas fa-chart-bar me-1"></i> Revenue Chart
+                </div>
+                <div class="card-body">
+                    <div id="revenue-chart"></div>
+                </div>
+                <div class="card-footer">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>January</td>
+                                <td>$8000</td>
+                            </tr>
+                            <tr>
+                                <td>February</td>
+                                <td>$9500</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- COGS Chart -->
+        <div class="col-md-6">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header">
                     <i class="fas fa-chart-pie me-1"></i> COGS Chart
@@ -139,155 +128,17 @@
             </div>
         </div>
 
+        <!-- Expenses Chart -->
         <div class="col-md-6">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header">
-                    <i class="fas fa-chart-line me-1"></i> COGS Records
+                    <i class="fas fa-chart-area me-1"></i> Expenses Chart
                 </div>
                 <div class="card-body">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Month</th>
-                                <th>Net Profit</th>
-                                <th>Revenue</th>
-                                <th>Free Cash Flows</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>January</td>
-                                <td>$5000</td>
-                                <td>$8000</td>
-                                <td>$3000</td>
-                            </tr>
-                            <tr>
-                                <td>February</td>
-                                <td>$7000</td>
-                                <td>$9500</td>
-                                <td>$4000</td>
-                            </tr>
-                            <tr>
-                                <td>March</td>
-                                <td>$6000</td>
-                                <td>$10000</td>
-                                <td>$3500</td>
-                            </tr>
-                            <tr>
-                                <td>April</td>
-                                <td>$7500</td>
-                                <td>$11000</td>
-                                <td>$4500</td>
-                            </tr>
-                            <tr>
-                                <td>May</td>
-                                <td>$8000</td>
-                                <td>$12000</td>
-                                <td>$5000</td>
-                            </tr>
-                            <tr>
-                                <td>June</td>
-                                <td>$8000</td>
-                                <td>$12000</td>
-                                <td>$5000</td>
-                            </tr>
-                        </tbody>
-                    </table>                    
+                    <div id="expenses-chart"></div>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-6">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header">
-                    <i class="fas fa-chart-bar me-1"></i> Revenue Report
-                </div>
-                <div class="card-body">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Month</th>
-                                <th>Revenue</th>
-                                <th>Financial Clearance</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>January</td>
-                                <td>$8000</td>
-                                <td>Cleared</td>
-                            </tr>
-                            <tr>
-                                <td>February</td>
-                                <td>$9500</td>
-                                <td>Pending</td>
-                            </tr>
-                            <tr>
-                                <td>March</td>
-                                <td>$10000</td>
-                                <td>Cleared</td>
-                            </tr>
-                            <tr>
-                                <td>April</td>
-                                <td>$11000</td>
-                                <td>Under Review</td>
-                            </tr>
-                            <tr>
-                                <td>May</td>
-                                <td>$12000</td>
-                                <td>Cleared</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header">
-                    <i class="fas fa-chart-area me-1"></i> Expenses Report
-                </div>
-                <div class="card-body">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Month</th>
-                                <th>Expenses</th>
-                                <th>Financial Clearance</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>January</td>
-                                <td>$2000</td>
-                                <td>Cleared</td>
-                            </tr>
-                            <tr>
-                                <td>February</td>
-                                <td>$2500</td>
-                                <td>Pending</td>
-                            </tr>
-                            <tr>
-                                <td>March</td>
-                                <td>$3000</td>
-                                <td>Cleared</td>
-                            </tr>
-                            <tr>
-                                <td>April</td>
-                                <td>$3500</td>
-                                <td>Under Review</td>
-                            </tr>
-                            <tr>
-                                <td>May</td>
-                                <td>$4000</td>
-                                <td>Cleared</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>         
     </div>
 </div>
 
