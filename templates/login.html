@@ -11,49 +11,9 @@
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
         <link href="{% static 'css/admin-template.css' %}" rel="stylesheet" />
         <script src="{% static 'js/fontawesome/all.min.js' %}" crossorigin="anonymous"></script>
+        <link href="{% static 'css/common.css' %}" rel="stylesheet" />
         <style>
-            .card-custom {
-                border-radius: 20px;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-                overflow: hidden;
-                display: flex;
-                width: 80%;
-                margin: auto;
-            }
-            .bg-primary-dark {
-                background: linear-gradient(45deg, #6F42C1, #007BFF);
-                color: white;
-            }
-            .login-icon {
-                width: 80px;
-                height: 80px;
-                line-height: 80px;
-                border-radius: 50%;
-                background: white;
-                color: #6F42C1;
-                font-size: 2rem;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin: 0 auto 1rem;
-            }
-            .welcome-section {
-                color: white;
-                padding: 2rem;
-                text-align: center;
-                display: flex;
-                flex-direction: column;
-                justify-content: center; /* Vertically center content */
-                align-items: center;    /* Horizontally center content */
-                height: auto;           /* Ensure the column takes the full height */
-            }
-            .welcome-section img {
-                max-width: 200px;
-                margin-bottom: 1rem;
-            }
-            .welcome-section h2 {
-                margin-bottom: 1rem;
-            }
+            
             
             
         </style>
@@ -61,6 +21,7 @@
     <body class="bg-radial-circuit">
         <div class="d-flex align-items-center justify-content-center" style="height: 100vh;">
             <div class="card-custom">
+              
                 <!-- Left Column: Login Area -->
                 <div class="col-4 bg-primary-dark p-4 d-flex flex-column align-items-center">
                     <div class="login-icon">
@@ -69,14 +30,27 @@
                           </svg>
                     </div>
                     <h3 class="text-center mb-4">Login</h3>
-                    <form class="w-100">
+                    <form action="{% url 'login' %}" method="POST" class="w-100">
+                        {% csrf_token %}
+                            {% if messages %}
+                                <div class="messages bg-danger px-4 flash-screen">
+                                    {% for message in messages %}
+                                    <span 
+                                        class="alert {{ message.tags|default:'alert-danger' }} alert-dismissible fade show px-5" 
+                                        role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close crossbtn" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         <div class="form-floating mb-3">
-                            <input class="form-control" id="inputEmail" type="email" placeholder="name@example.com" />
                             <label for="inputEmail">Email address</label>
+                            <input class="form-control" name="email" id="inputEmail" type="email" placeholder="name@example.com" />
                         </div>
                         <div class="form-floating mb-3">
-                            <input class="form-control" id="inputPassword" type="password" placeholder="Password" />
                             <label for="inputPassword">Password</label>
+                            <input class="form-control" name="password" id="inputPassword" type="password" placeholder="Password" />
                         </div>
                         <div class="form-check mb-3">
                             <input class="form-check-input" id="inputRememberPassword" type="checkbox" />
@@ -98,6 +72,8 @@
         </div>
         <script src="{% static 'js/bootstrap.bundle.min.js' %}" crossorigin="anonymous"></script>
         <script src="{% static 'js/scripts.js' %}"></script>
+        <script src="{% static 'js/common.js' %}"></script>
+
     </body>
 </html>
 

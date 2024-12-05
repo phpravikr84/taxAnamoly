@@ -5,7 +5,25 @@
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item active">Dashboard</li>
     </ol>
-    
+
+    {% if messages %}
+        <div 
+            class="messages px-4 flash-screen mb-2 
+            {% if messages.0.tags == 'success' %}bg-success 
+            {% elif messages.0.tags == 'danger' %}bg-danger 
+            {% else %}bg-secondary 
+            {% endif %}">
+            {% for message in messages %}
+            <span 
+                class="alert {{ message.tags|default:'alert-danger' }} alert-dismissible fade show px-5" 
+                role="alert">
+                {{ message }}
+                <button type="button" class="btn-close crossbtn" data-bs-dismiss="alert" aria-label="Close"></button>
+            </span>
+            {% endfor %}
+        </div>
+    {% endif %}
+        
     <!-- Tabs Section -->
     <ul class="nav nav-tabs mb-4" id="dashboard-tabs" role="tablist">
         <li class="nav-item" role="presentation">

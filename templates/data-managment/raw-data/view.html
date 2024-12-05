@@ -1,4 +1,5 @@
 {% extends '../../layouts/master.html' %}
+
 {% block body %}
 <div class="container-fluid px-4">
     <h1 class="mt-4 custom-header">Data Management</h1>
@@ -12,41 +13,109 @@
         </div>
         <div class="card-body">
             <table id="datatablesSimple">
+                {% if file_record.file_name == 'gst_final' %}
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
+                        <th>TIN</th>
+                        <th>Taxpayer</th>
+                        <th>Tax Account</th>
+                        <th>Assessment No</th>
+                        <th>Form Vers</th>
+                        <th>Tax Period</th>
                     </tr>
                 </thead>
                 <tfoot>
                     <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
+                        <th>TIN</th>
+                        <th>Taxpayer</th>
+                        <th>Tax Account</th>
+                        <th>Assessment No</th>
+                        <th>Form Vers</th>
+                        <th>Tax Period</th>
                     </tr>
                 </tfoot>
                 <tbody>
-                    {% for record in records %}
+                    {% for row in csv_data %}
                     <tr>
-                        <td>{{ record.name }}</td>
-                        <td>{{ record.position }}</td>
-                        <td>{{ record.office }}</td>
-                        <td>{{ record.age }}</td>
-                        <td>{{ record.start_date }}</td>
-                        <td>{{ record.salary }}</td>
-                        
+                        <td>{{ row.0 }}</td>
+                        <td>{{ row.1 }}</td>
+                        <td>{{ row.2 }}</td>
+                        <td>{{ row.3 }}</td>
+                        <td>{{ row.4 }}</td>
+                        <td>{{ row.5 }}</td>
                     </tr>
                     {% endfor %}
-                  
-                   
                 </tbody>
+                {% elif file_record.file_name == 'cit_final' %}
+                <thead>
+                    <tr>
+                        <th>TIN</th>
+                        <th>Tax Account</th>
+                        <th>Assessment No</th>
+                        <th>Entry Date</th>
+                        <th>Assessed</th>
+                        <th>Due Date</th>
+                        <th>Tax Period</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>TIN</th>
+                        <th>Tax Account</th>
+                        <th>Assessment No</th>
+                        <th>Entry Date</th>
+                        <th>Assessed</th>
+                        <th>Due Date</th>
+                        <th>Tax Period</th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {% for row in csv_data %}
+                    <tr>
+                        <td>{{ row.0 }}</td>
+                        <td>{{ row.1 }}</td>
+                        <td>{{ row.2 }}</td>
+                        <td>{{ row.3 }}</td>
+                        <td>{{ row.4 }}</td>
+                        <td>{{ row.5 }}</td>
+                        <td>{{ row.6 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% elif file_record.file_name == 'swt_final' %}
+                <thead>
+                    <tr>
+                        <th>TIN</th>
+                        <th>Estab No</th>
+                        <th>Head Office</th>
+                        <th>Tax Account</th>
+                        <th>Tax Period Year</th>
+                        <th>Tax Period Month</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>TIN</th>
+                        <th>Estab No</th>
+                        <th>Head Office</th>
+                        <th>Tax Account</th>
+                        <th>Tax Period Year</th>
+                        <th>Tax Period Month</th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {% for row in csv_data %}
+                    <tr>
+                        <td>{{ row.0 }}</td>
+                        <td>{{ row.1 }}</td>
+                        <td>{{ row.2 }}</td>
+                        <td>{{ row.3 }}</td>
+                        <td>{{ row.4 }}</td>
+                        <td>{{ row.5 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% endif %}
             </table>
         </div>
     </div>

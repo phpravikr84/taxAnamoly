@@ -3,12 +3,12 @@
 <div class="container-fluid px-4">
     <h1 class="mt-4 custom-header">Data Management</h1>
     <ol class="breadcrumb mb-4 custom-breadcrumb">
-        <li class="breadcrumb-item active">Raw Data</li>
+        <li class="breadcrumb-item active">Raw Data Merged Files</li>
     </ol>
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-table me-1"></i>
-            Raw Data
+            Raw Data Merged Files
         </div>
         <div class="card-body">
             <table id="datatablesSimple">
@@ -16,6 +16,7 @@
                     <tr>
                       <th>ID</th>
                       <th>File Name</th>
+                      <th>File Path</th>
                       <th>Created By</th>
                       <th>Created At</th>
                       <th>Modified At</th>
@@ -26,6 +27,7 @@
                     <tr>
                         <th>ID</th>
                         <th>File Name</th>
+                        <th>File Path</th>
                         <th>Created By</th>
                         <th>Created At</th>
                         <th>Modified At</th>
@@ -37,14 +39,16 @@
                   <tr>
                       <td>{{ record.id }}</td>
                       <td>{{ record.file_name }}</td>
+                      <td>{{ record.file_path }}</td>
                       <td>{{ record.uploaded_by }}</td>
                       <td>{{ record.created_at }}</td>
                       <td>{{ record.modified_at }}</td>
                       <td>
                           <!-- View Button -->
-                          <button type="button" class="btn btn-primary btn-sm">
-                              <i class="bi bi-eye"></i> View
-                          </button>
+                          <!-- View Button with link to the viewRawData view -->
+                            <a href="{% url 'view-raw-data' record.id %}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-eye"></i> View
+                            </a>
       
                           <!-- Process Button -->
                           <button type="button" class="btn btn-success btn-sm">

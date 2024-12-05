@@ -19,11 +19,15 @@ from django.urls import path
 from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.login),
+    path('login/', views.login, name="login"),
+    #
+    # path('login/', views.login, name="login"),
+    path('logout', views.logout, name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('data-management/raw-data/', views.rawData, name='data-management-view'),
-    path('data-management/raw-data/view', views.viewRawData, name='view-raw-data'),
+    path('data-management/raw-data/view/<int:file_id>', views.viewRawData, name='view-raw-data'),
      path('data-management/raw-data/upload/', views.rawDataUpload, name='data-management-upload'),
+     path('data-management/raw-data/merge_files/', views.merge_files, name='data-management-merge-files'),
     path('data-management/process-data/', views.processData, name='data-management-processed'),
     path('data-management/process-data/view', views.viewProcessData, name='view-process-data'),
     path('dashboard/analytics/', views.viewFraudAnalyticsData, name='dashboard-analytics'),

@@ -14,10 +14,42 @@
             <div class="row d-flex justify-content-center">
                 <div class="col-md-12 text-center">
                       <h1>Upload Test CSV</h1>
-                      <form method="POST" enctype="multipart/form-data" class="text-center">
-                          {% csrf_token %}
-                          <button class="btn btn-primary" type="submit">Upload and Process</button>
-                      </form>
+                        {% if messages %}
+                            <div 
+                                class="messages px-4 flash-screen 
+                                {% if messages.0.tags == 'SUCCESS' %}bg-success 
+                                {% elif messages.0.tags == 'ERROR' %}bg-danger 
+                                {% else %}bg-secondary 
+                                {% endif %}">
+                                {% for message in messages %}
+                                <span 
+                                    class="alert {{ message.tags|default:'alert-danger' }} alert-dismissible fade show px-5" 
+                                    role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close crossbtn" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <form method="POST" enctype="multipart/form-data" class="d-flex align-items-center gap-3">
+                            {% csrf_token %}
+                            <select class="form-select w-25" name="financialfilename">
+                                <option value="">Select Financial Filename</option>
+                                {% for key, value in financefilenames.items %}
+                                    <option value="{{ key }}">{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                            {{ form.file }}
+                            <button class="btn btn-primary" type="submit">Upload and Process</button>
+                        </form>
+                        
+                </div>
+                <div class="col-md-12 mt-4">
+                    <form method="post" action="{% url 'data-management-merge-files' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Merge Files</button>
+                    </form>
                 </div>
               </div>
         </div>
