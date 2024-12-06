@@ -12,8 +12,8 @@
         </div>
         <div class="card-body">
             <div class="row d-flex justify-content-center">
-                <div class="col-md-12 text-center">
-                      <h1>Upload Test CSV</h1>
+                <div class="col-md-7">
+                      <h1>Upload Raw Files</h1>
                         {% if messages %}
                             <div 
                                 class="messages px-4 flash-screen 
@@ -32,25 +32,39 @@
                             </div>
                         {% endif %}
 
-                        <form method="POST" enctype="multipart/form-data" class="d-flex align-items-center gap-3">
+                        <form id="upload-form" action="{% url 'data-management-upload' %}"  enctype="multipart/form-data" class="d-flex align-items-center gap-3">
                             {% csrf_token %}
-                            <select class="form-select w-25" name="financialfilename">
+                            <select id="financial-filename" class="form-select w-25" name="financialfilename">
                                 <option value="">Select Financial Filename</option>
                                 {% for key, value in financefilenames.items %}
                                     <option value="{{ key }}">{{ value }}</option>
                                 {% endfor %}
                             </select>
-                            {{ form.file }}
-                            <button class="btn btn-primary" type="submit">Upload and Process</button>
+                            <input id="file-input" type="file" name="file" multiple>
+                            <button class="btn btn-primary" type="button" id="upload-button">Upload</button>
                         </form>
-                        
                 </div>
-                <div class="col-md-12 mt-4">
+                <div class="col-md-5">
+                    {% comment %} <div id="file-list" class="mt-2">
+                        <!-- Uploaded files will be displayed here -->
+                    </div> {% endcomment %}
+                    <ul id="file-list" class="list-group list-group-flush">
+                    </ul>
+                </div>
+                <div class="col-md-12 mt-4 text-end" id="mergeFiles">
                     <form method="post" action="{% url 'data-management-merge-files' %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-primary">Merge Files</button>
+                        <button type="button" class="btn btn-warning" id="merge-btn">Merge Your Files in One Click!</button>
                     </form>
-                </div>
+                    <div id="progress-container" class="mt-3" style="display:none;">
+                        <div class="progress">
+                            <div id="progress-bar" class="progress-bar bg-success" role="progressbar" 
+                                style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                0%
+                            </div>
+                        </div>
+                    </div>
+                </div>                
               </div>
         </div>
     </div>

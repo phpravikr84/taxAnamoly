@@ -11,113 +11,52 @@
             <i class="fas fa-table me-1"></i>
             Raw Data
         </div>
-        <div class="card-body">
+        <div class="card-body table-responsive">
             <table id="datatablesSimple">
-                {% if file_record.file_name == 'gst_final' %}
                 <thead>
                     <tr>
-                        <th>TIN</th>
-                        <th>Taxpayer</th>
-                        <th>Tax Account</th>
-                        <th>Assessment No</th>
-                        <th>Form Vers</th>
-                        <th>Tax Period</th>
+                        {% for header in headers %}
+                        <th>{{ header }}</th>
+                        {% endfor %}
                     </tr>
                 </thead>
-                <tfoot>
-                    <tr>
-                        <th>TIN</th>
-                        <th>Taxpayer</th>
-                        <th>Tax Account</th>
-                        <th>Assessment No</th>
-                        <th>Form Vers</th>
-                        <th>Tax Period</th>
-                    </tr>
-                </tfoot>
                 <tbody>
-                    {% for row in csv_data %}
+                    {% for row in page_obj %}
                     <tr>
-                        <td>{{ row.0 }}</td>
-                        <td>{{ row.1 }}</td>
-                        <td>{{ row.2 }}</td>
-                        <td>{{ row.3 }}</td>
-                        <td>{{ row.4 }}</td>
-                        <td>{{ row.5 }}</td>
+                        {% for cell in row %}
+                        <td>{{ cell }}</td>
+                        {% endfor %}
                     </tr>
                     {% endfor %}
                 </tbody>
-                {% elif file_record.file_name == 'cit_final' %}
-                <thead>
-                    <tr>
-                        <th>TIN</th>
-                        <th>Tax Account</th>
-                        <th>Assessment No</th>
-                        <th>Entry Date</th>
-                        <th>Assessed</th>
-                        <th>Due Date</th>
-                        <th>Tax Period</th>
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr>
-                        <th>TIN</th>
-                        <th>Tax Account</th>
-                        <th>Assessment No</th>
-                        <th>Entry Date</th>
-                        <th>Assessed</th>
-                        <th>Due Date</th>
-                        <th>Tax Period</th>
-                    </tr>
-                </tfoot>
-                <tbody>
-                    {% for row in csv_data %}
-                    <tr>
-                        <td>{{ row.0 }}</td>
-                        <td>{{ row.1 }}</td>
-                        <td>{{ row.2 }}</td>
-                        <td>{{ row.3 }}</td>
-                        <td>{{ row.4 }}</td>
-                        <td>{{ row.5 }}</td>
-                        <td>{{ row.6 }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                {% elif file_record.file_name == 'swt_final' %}
-                <thead>
-                    <tr>
-                        <th>TIN</th>
-                        <th>Estab No</th>
-                        <th>Head Office</th>
-                        <th>Tax Account</th>
-                        <th>Tax Period Year</th>
-                        <th>Tax Period Month</th>
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr>
-                        <th>TIN</th>
-                        <th>Estab No</th>
-                        <th>Head Office</th>
-                        <th>Tax Account</th>
-                        <th>Tax Period Year</th>
-                        <th>Tax Period Month</th>
-                    </tr>
-                </tfoot>
-                <tbody>
-                    {% for row in csv_data %}
-                    <tr>
-                        <td>{{ row.0 }}</td>
-                        <td>{{ row.1 }}</td>
-                        <td>{{ row.2 }}</td>
-                        <td>{{ row.3 }}</td>
-                        <td>{{ row.4 }}</td>
-                        <td>{{ row.5 }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                {% endif %}
             </table>
+            
+            <!-- Pagination Controls -->
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; first</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+            
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+            
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>            
         </div>
     </div>
 </div>
+<style>
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling for mobile devices */
+    }
+    
+</style>
 {% endblock body %}

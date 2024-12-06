@@ -7,10 +7,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Dashboard - SB Admin</title>
+        <title>Dashboard - Taxanamoly</title>
         <link href="{% static 'css/datatables.css' %}" rel="stylesheet" />
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
         <link href="{% static 'css/admin-template.css' %}" rel="stylesheet" />
-        <script src="{% static 'js/fonteawesome/all.min.js' %}" crossorigin="anonymous"></script>
         <link href="{% static 'css/common.css' %}" rel="stylesheet" />
+        <script>
+            var deleteFileUrl = "{% url 'delete-file' %}";
+            var redirectUrl = "{% url 'data-management-upload' %}";
+            var deleteMergeUrl = "{% url 'delete-merge-file' %}";
+        </script>
     </head>

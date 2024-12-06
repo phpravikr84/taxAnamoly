@@ -1,0 +1,123 @@
+{% extends '../../layouts/master.html' %}
+
+{% block body %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4 custom-header">Data Management</h1>
+    <ol class="breadcrumb mb-4 custom-breadcrumb">
+        <li class="breadcrumb-item active">Raw Data</li>
+    </ol>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Raw Data
+        </div>
+        <div class="card-body">
+            <table id="datatablesSimple">
+                {% if file_record.file_name == 'gst_final' %}
+                <thead>
+                    <tr>
+                        <th>TIN</th>
+                        <th>Taxpayer</th>
+                        <th>Tax Account</th>
+                        <th>Assessment No</th>
+                        <th>Form Vers</th>
+                        <th>Tax Period</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>TIN</th>
+                        <th>Taxpayer</th>
+                        <th>Tax Account</th>
+                        <th>Assessment No</th>
+                        <th>Form Vers</th>
+                        <th>Tax Period</th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {% for row in csv_data %}
+                    <tr>
+                        <td>{{ row.0 }}</td>
+                        <td>{{ row.1 }}</td>
+                        <td>{{ row.2 }}</td>
+                        <td>{{ row.3 }}</td>
+                        <td>{{ row.4 }}</td>
+                        <td>{{ row.5 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% elif file_record.file_name == 'cit_final' %}
+                <thead>
+                    <tr>
+                        <th>TIN</th>
+                        <th>Tax Account</th>
+                        <th>Assessment No</th>
+                        <th>Entry Date</th>
+                        <th>Assessed</th>
+                        <th>Due Date</th>
+                        <th>Tax Period</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>TIN</th>
+                        <th>Tax Account</th>
+                        <th>Assessment No</th>
+                        <th>Entry Date</th>
+                        <th>Assessed</th>
+                        <th>Due Date</th>
+                        <th>Tax Period</th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {% for row in csv_data %}
+                    <tr>
+                        <td>{{ row.0 }}</td>
+                        <td>{{ row.1 }}</td>
+                        <td>{{ row.2 }}</td>
+                        <td>{{ row.3 }}</td>
+                        <td>{{ row.4 }}</td>
+                        <td>{{ row.5 }}</td>
+                        <td>{{ row.6 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% elif file_record.file_name == 'swt_final' %}
+                <thead>
+                    <tr>
+                        <th>TIN</th>
+                        <th>Estab No</th>
+                        <th>Head Office</th>
+                        <th>Tax Account</th>
+                        <th>Tax Period Year</th>
+                        <th>Tax Period Month</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>TIN</th>
+                        <th>Estab No</th>
+                        <th>Head Office</th>
+                        <th>Tax Account</th>
+                        <th>Tax Period Year</th>
+                        <th>Tax Period Month</th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {% for row in csv_data %}
+                    <tr>
+                        <td>{{ row.0 }}</td>
+                        <td>{{ row.1 }}</td>
+                        <td>{{ row.2 }}</td>
+                        <td>{{ row.3 }}</td>
+                        <td>{{ row.4 }}</td>
+                        <td>{{ row.5 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock body %}
