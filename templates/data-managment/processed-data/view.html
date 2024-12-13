@@ -3,47 +3,66 @@
 <div class="container-fluid px-4">
     <h1 class="mt-4 custom-header">Data Management</h1>
     <ol class="breadcrumb mb-4 custom-breadcrumb">
-        <li class="breadcrumb-item active">Process Data / View</li>
+        <li class="breadcrumb-item active">Predicted Files</li>
     </ol>
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-table me-1"></i>
-            Process Data View
+            Predicted Files
         </div>
         <div class="card-body">
             <table id="datatablesSimple">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
+                      <th>ID</th>
+                      <th>File Name</th>
+                      <th>File Path</th>
+                      <th>Created By</th>
+                      <th>Created At</th>
+                      <th>Modified At</th>
+                      <th>Action</th>
                     </tr>
                 </thead>
                 <tfoot>
                     <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
+                        <th>ID</th>
+                        <th>File Name</th>
+                        <th>File Path</th>
+                        <th>Created By</th>
+                        <th>Created At</th>
+                        <th>Modified At</th>
+                        <th>Action</th>
                     </tr>
                 </tfoot>
                 <tbody>
                     {% for record in records %}
                     <tr>
-                        <td>{{ record.name }}</td>
-                        <td>{{ record.position }}</td>
-                        <td>{{ record.office }}</td>
-                        <td>{{ record.age }}</td>
-                        <td>{{ record.start_date }}</td>
-                        <td>{{ record.salary }}</td>
+                        <td>{{ record.id }}</td>
+                        <td>{{ record.file_name }}</td>
+                        <td>{{ record.file_path_pd }}</td>
+                        <td>{{ record.uploaded_by }}</td>
+                        <td>{{ record.created_at }}</td>
+                        <td>{{ record.modified_at }}</td>
+                        <td>
+                            <!-- Download Button -->
+                            <a href="{% url 'data-management-predicted-data-download' record.id %}" tooltip="Download" class="btn btn-sm btn-success">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
+                                </svg>
+                            </a>
+                
+                            <!-- View Detail Button -->
+                            <a href="{% url 'data-management-predicted-data-view' record.id %}" tooltip="View Details" class="btn btn-primary btn-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                                </svg>
+                            </a>
+                        </td>
                     </tr>
                     {% endfor %}
-                </tbody>
+                </tbody>                
             </table>
         </div>
     </div>

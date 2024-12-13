@@ -2,7 +2,8 @@ import os
 import time
 import csv
 import pandas as pd
-from django.http import HttpResponse, JsonResponse
+import numpy as np
+from django.http import HttpResponse, JsonResponse, Http404
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect, get_object_or_404
 from random import randint, choice
@@ -10,6 +11,7 @@ from faker import Faker
 from datetime import datetime, timedelta
 from django.contrib import messages, auth
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from .forms import CSVUploadForm
 from .utils import preprocess_csv
 from filemasters.models import FilesMaster 
@@ -17,9 +19,22 @@ from accounts.models import User
 from django.utils.timezone import now
 from django.conf import settings
 from django.core.paginator import Paginator
+import json
+import joblib
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, roc_auc_score
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+
+
 
 MEDIA_DIR = 'media/csv/'
 MEDIA_DIR_MERGE = 'media/csv/merge/'
+PROCESS_DIRS = 'media/csv/processed/'
+PREDICTED_DIRS = 'media/csv/predict/'
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_DIR = os.path.join(BASE_DIR, 'static', 'model')
 ALLOWED_EXTENSIONS = ['csv', 'xls', 'xlsx', 'pdf']
 FINANCE_FILENAMES = {
             'gst': 'GST',
@@ -223,43 +238,64 @@ def deleteUploadedFile(request):
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
 
 @csrf_exempt
+@login_required
 def merge_files(request):
     # Ensure the directory for merged files exists
     os.makedirs(MEDIA_DIR_MERGE, exist_ok=True)
 
-    if not request.user.is_authenticated:
-        return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=401)
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
     user = request.user  # Get the authenticated user
-    total_files = len(FINANCE_FILENAMES)
-    processed_files = 0  # Track processed files count
+    file_name = request.POST.get('mergefilename')  # Get and sanitize the filename
+
+    # Validate file_name
+    if not file_name:
+        return JsonResponse({'status': 'error', 'message': 'Filename cannot be blank, empty, or null'}, status=400)
 
     try:
-        # Loop through finance file names
-        for key, value in FINANCE_FILENAMES.items():
-            file_name = key  # Define the base file name dynamically FINANCE_FILENAMES_MERGE
-            files = FilesMaster.objects.filter(file_name=file_name, file_state=1)  # Only raw files
-            #files = FilesMaster.objects.filter(file_name=file_name, merge_status=0)  # Only raw files
-            
-            # Prepare lists to hold dataframes for CSV and Excel files
-            file_dfs = {'csv': [], 'excel': []}
+        # Fetch files from FilesMaster based on file_name and file_state
+        files = FilesMaster.objects.filter(file_name=file_name, file_state=1)
 
-            # Process each file
-            for file in files:
-                file_path = file.file_path_rw
-                try:
-                    if file_path.endswith('.csv'):
-                        df = pd.read_csv(file_path)
+        if not files.exists():
+            return JsonResponse({'status': 'error', 'message': 'No files found to merge for the provided filename'}, status=404)
+
+        # Prepare lists to hold dataframes for CSV and Excel files
+        file_dfs = {'csv': [], 'excel': []}
+        processed_files = 0  # Track processed files count
+        errors = []  # Collect errors for debugging
+
+        # Process each file
+        for file in files:
+            file_path = file.file_path_rw
+            if not os.path.exists(file_path):
+                errors.append(f"File not found: {file_path}")
+                continue
+
+            try:
+                if file_path.endswith('.csv'):
+                    try:
+                        # Attempt to read with UTF-8 encoding first
+                        df = pd.read_csv(file_path, encoding='ISO-8859-1', low_memory=False)
                         file_dfs['csv'].append(df)
-                    elif file_path.endswith('.xlsx') or file_path.endswith('.xls'):
-                        df = pd.read_excel(file_path)
-                        file_dfs['excel'].append(df)
-                except Exception as e:
-                    continue  # Skip the problematic file and continue
+                    except UnicodeDecodeError as e_utf8:
+                        try:
+                            # Fallback to 'latin1' encoding
+                            df = pd.read_csv(file_path, encoding='ISO-8859-1', low_memory=False)
+                            file_dfs['csv'].append(df)
+                        except Exception as e_latin1:
+                            errors.append(f"Error reading CSV file {file_path} with both UTF-8 and Latin1: {str(e_latin1)}")
+                elif file_path.endswith('.xlsx') or file_path.endswith('.xls'):
+                    df = pd.read_excel(file_path)
+                    file_dfs['excel'].append(df)
+            except Exception as e:
+                errors.append(f"Unexpected error processing file {file_path}: {str(e)}")
+                continue
 
-            # Merge and save CSV files
-            if file_dfs['csv']:
-                merged_csv_df = pd.concat(file_dfs['csv'], ignore_index=True)
+        # Merge and save CSV files
+        if file_dfs['csv']:
+            try:
+                merged_csv_df = pd.concat(file_dfs['csv'], ignore_index=True, sort=False)
                 merged_csv_file_name = f"{file_name}_final_rawfile.csv"
                 merged_csv_file_path = os.path.join(MEDIA_DIR_MERGE, merged_csv_file_name)
                 merged_csv_df.to_csv(merged_csv_file_path, index=False)
@@ -273,10 +309,14 @@ def merge_files(request):
                     file_state=5,
                     merge_status=True
                 )
+                processed_files += 1
+            except Exception as e:
+                errors.append(f"Error merging CSV files: {str(e)}")
 
-            # Merge and save Excel files
-            if file_dfs['excel']:
-                merged_excel_df = pd.concat(file_dfs['excel'], ignore_index=True)
+        # Merge and save Excel files
+        if file_dfs['excel']:
+            try:
+                merged_excel_df = pd.concat(file_dfs['excel'], ignore_index=True, sort=False)
                 merged_excel_file_name = f"{file_name}_final_rawfile.xlsx"
                 merged_excel_file_path = os.path.join(MEDIA_DIR_MERGE, merged_excel_file_name)
                 merged_excel_df.to_excel(merged_excel_file_path, index=False)
@@ -287,18 +327,23 @@ def merge_files(request):
                     user_id=user,
                     status=1,
                     reason='Merged Excel files',
-                    file_state=1,
+                    file_state=5,
                     merge_status=True
                 )
+                processed_files += 1
+            except Exception as e:
+                errors.append(f"Error merging Excel files: {str(e)}")
 
-            processed_files += 1  # Increment processed count
+        if processed_files == 0:
+            # No valid files were processed, provide detailed reasons
+            return JsonResponse({'status': 'error', 'message': 'No valid files processed for merging', 'errors': errors}, status=400)
 
-        return JsonResponse({'status': 'success', 'processed_files': processed_files, 'total_files': total_files})
+        return JsonResponse({'status': 'success', 'processed_files': processed_files, 'message': 'Files merged successfully'})
 
     except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+        return JsonResponse({'status': 'error', 'message': f"An error occurred: {str(e)}"}, status=500)
 
-
+    
 @csrf_exempt
 def deleteMergeFile(request):
     """
@@ -332,7 +377,7 @@ def display_results(request):
     if not file_path or not os.path.exists(file_path):
         return HttpResponse("No file found. Please upload a CSV first.", status=404)
 
-    data = pd.read_csv(file_path)
+    data = pd.read_csv(file_path, encoding='ISO-8859-1', low_memory=False)
 
     # Convert to dictionary format
     table_data = data.to_dict(orient='records')
@@ -353,22 +398,357 @@ def display_results(request):
 
 # Define Process Data Page
 def processData(request):
-    faker = Faker()
+    # Query FilesMaster with the necessary fields and join with the User model
+    files = FilesMaster.objects.filter(file_state=5, merge_status=True).select_related('User').values(
+        'id',
+        'file_name',
+        'file_path_rw',
+        'created_date',
+        'modified_date',
+        'user_id__first_name',
+        'user_id__last_name'
+    )
+
     records = []
 
-    # Generate 50 dummy records
-    for i in range(1, 51):
-        created_at = faker.date_time_between(start_date="-1y", end_date="now")
-        modified_at = created_at + timedelta(days=randint(1, 30))  # Modified date after creation
+    # Process the query results
+    for file in files:
         records.append({
-            "id": i,
-            "file_name": faker.file_name(category="text"),  # Generate random file name
-            "uploaded_by": faker.name(),
-            "created_at": created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            "modified_at": modified_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "id": file['id'],
+            "file_id": file['id'],
+            "file_name": file['file_name'],
+            "file_path": file['file_path_rw'],
+            "uploaded_by": f"{file['user_id__first_name']} {file['user_id__last_name']}",
+            "created_at": file['created_date'].strftime("%Y-%m-%d %H:%M:%S"),
+            "modified_at": file['modified_date'].strftime("%Y-%m-%d %H:%M:%S"),
         })
-  
+
+    # Render the records in the view template
     return render(request, 'data-managment/processed-data/index.html', {"records": records})
+
+
+@csrf_exempt
+def ProcessRawFiles(request):
+    if request.method == 'POST':
+        try:
+            # Parse file paths from POST data
+            body_data = json.loads(request.body)
+            file_paths = body_data.get('filePaths', [])
+            csv_files = {file['file_name']: file['file_path'] for file in file_paths}
+            user = request.user  # Get the authenticated user
+
+            # Get FileIds as a PostgreSQL-compatible array literal
+            parentFileIds = [file['file_id'] for file in file_paths if 'file_id' in file]
+            postgres_array = "{" + ",".join(map(str, parentFileIds)) + "}"
+
+            # Define paths and load CSV files explicitly
+            try:
+                gst_df = pd.read_csv(csv_files.get('gst', ''), encoding='ISO-8859-1', low_memory=False)
+                cit_df = pd.read_csv(csv_files.get('cit', ''), encoding='ISO-8859-1', low_memory=False)
+                swt_df = pd.read_csv(csv_files.get('swt', ''), encoding='ISO-8859-1', low_memory=False)
+                non_ind_reg_df = pd.read_csv(csv_files.get('non_ind_reg', ''), encoding='ISO-8859-1', low_memory=False)
+                gst_refund_df = pd.read_csv(csv_files.get('gst_refund', ''), encoding='ISO-8859-1', low_memory=False)
+            except FileNotFoundError as e:
+                return JsonResponse({'status': 'error', 'message': str(e)})
+
+            # Standardize column names
+            for df in [gst_df, cit_df, swt_df, non_ind_reg_df, gst_refund_df]:
+                if not df.empty:
+                    df.columns = df.columns.str.lower().str.replace(' ', '_')
+
+            # Call feature engineering method
+            result = engineer_features(
+                gst_df, cit_df, swt_df, non_ind_reg_df, gst_refund_df
+            )
+
+            if not result.empty:
+                os.makedirs(PROCESS_DIRS, exist_ok=True)  # Ensure the directory exists
+
+                # Generate a dynamic file name
+                output_file_name = f"output_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+                output_file_path = os.path.join(PROCESS_DIRS, output_file_name)
+                result.to_csv(output_file_path, index=False)
+
+                # Save metadata in FilesMaster model
+                FilesMaster.objects.create(
+                    file_name=f"{output_file_name}_unified",
+                    file_path_pr=output_file_path,
+                    user_id=user,
+                    parent_file_id=postgres_array,
+                    status=1,
+                    reason='Processed CSV file',
+                    file_state=2,
+                    merge_status=True
+                )
+
+                # Include data types in the response
+                result_dtypes = {col: str(dtype) for col, dtype in result.dtypes.to_dict().items()}
+
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Files processed successfully done! Please wait another prediction started ...',
+                    'processed_file_path': output_file_path,
+                    'data_types': result_dtypes
+                })
+
+            return JsonResponse({'status': 'error', 'message': 'Feature engineering returned no results.'})
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+
+
+
+#==============================
+# SHARE BY DATA SCIECNCE TEAM
+#=============================
+def engineer_features(gst_df, cit_df, swt_df, non_ind_reg_df, gst_refund_df):
+    gst_features = gst_df.groupby(['tin', 'tax_period_year']).agg(
+        total_sales_gst=('10_total_sales', 'sum'),
+        gst_payable=('151_gst_payable', 'sum')
+    ).reset_index()
+
+    cit_features = cit_df.groupby(['tin', 'tax_period_']).agg(
+        net_income=('710.current_year_profit_/_loss', 'sum'),
+        total_liabilities=('590.total_liabilities', 'sum'),
+        total_assets=('536.total_assets', 'sum')
+    ).reset_index()
+    cit_features.rename(columns={'tax_period_': 'tax_period_year'}, inplace=True)
+
+    swt_features = swt_df.groupby(['tin', 'tax_period_year']).agg(
+        total_employees=('10.no.employees_on_payroll', 'sum'),
+        total_salary_wages_paid=('20.total_salary_wages_paid', 'sum')
+    ).reset_index()
+
+    refund_features = gst_refund_df.groupby(['tin', 'tper_year']).agg(
+        refund_approved_amount=('approve_amt', 'sum'),
+        refund_frequency=('approve_amt', 'count')
+    ).reset_index()
+    refund_features.rename(columns={'tper_year': 'tax_period_year'}, inplace=True)
+
+    reg_features = non_ind_reg_df[['tin', 'taxpayer_name', 'taxpayer_type', 'sector_activity']]
+
+    filing_frequency = gst_df.groupby(['tin', 'tax_period_year']).size().reset_index(name='filing_frequency')
+    late_filing_count = gst_df[gst_df['entry_date'] > gst_df['due_date']].groupby(['tin', 'tax_period_year']).size().reset_index(name='late_filing_count')
+
+    sector_sales_avg = non_ind_reg_df.merge(gst_df, on='tin').groupby('sector_activity').agg(
+        sector_average_sales=('10_total_sales', 'mean')
+    ).reset_index()
+    gst_features = gst_features.merge(non_ind_reg_df[['tin', 'sector_activity']], on='tin', how='left')
+    gst_features = gst_features.merge(sector_sales_avg, on='sector_activity', how='left')
+
+    features_to_merge = [
+        (cit_features, ['tin', 'tax_period_year']),
+        (swt_features, ['tin', 'tax_period_year']),
+        (refund_features, ['tin', 'tax_period_year']),
+        (reg_features, ['tin']),
+        (filing_frequency, ['tin', 'tax_period_year']),
+        (late_filing_count, ['tin', 'tax_period_year']),
+        (gst_features, ['tin', 'tax_period_year']),
+    ]
+
+    unified_df = features_to_merge[0][0]
+    for feature_df, merge_keys in features_to_merge[1:]:
+        unified_df = unified_df.merge(feature_df, on=merge_keys, how='left')
+
+    if 'sector_activity_x' in unified_df.columns:
+        unified_df.rename(columns={'sector_activity_x': 'sector_activity'}, inplace=True)
+    if 'sector_activity_y' in unified_df.columns:
+        unified_df.drop(columns=['sector_activity_y'], inplace=True)
+
+    unified_df['gst_compliance_ratio'] = unified_df['gst_payable'] / unified_df['total_sales_gst']
+    unified_df['employee_wage_ratio'] = unified_df['total_salary_wages_paid'] / unified_df['total_employees']
+    unified_df['sales_to_asset_ratio'] = unified_df['total_sales_gst'] / unified_df['total_assets']
+    unified_df['debt_to_asset_ratio'] = unified_df['total_liabilities'] / unified_df['total_assets']
+
+    unified_df['risk_score_gst'] = np.where(unified_df['gst_compliance_ratio'] < 0.8, 10, 0)
+    unified_df['risk_score_swt'] = np.where(unified_df['employee_wage_ratio'] < 5000, 15, 0)
+    unified_df['risk_score_refund'] = np.where(unified_df['refund_approved_amount'] > 1000000, 5, 0)
+    unified_df['risk_score_cit'] = np.where((unified_df['debt_to_asset_ratio'] > 0.5) & (unified_df['net_income'] < 0), 20, 0)
+
+    unified_df['total_risk_score'] = unified_df[['risk_score_gst', 'risk_score_swt', 'risk_score_refund', 'risk_score_cit']].sum(axis=1)
+    return unified_df
+
+def make_predictions(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method."}, status=405)
+
+    try:
+        user = request.user  # Get the authenticated user
+        # Parse JSON payload
+        data = json.loads(request.body)
+        processed_file_path = data.get('processedFilePath')
+
+        if not processed_file_path:
+            return JsonResponse({"error": "processedFilePath not provided in the request."}, status=400)
+
+        if not os.path.exists(processed_file_path):
+            return JsonResponse({"error": f"File not found: {processed_file_path}"}, status=400)
+
+        # Load model and preprocessor
+        model_path = os.path.join(MODEL_DIR, 'fraud_detection_model.pkl')
+        preprocessor_path = os.path.join(MODEL_DIR, 'scaler.pkl')
+
+
+        if not os.path.exists(model_path) or not os.path.exists(preprocessor_path):
+            return JsonResponse({"error": "Required model or preprocessor files are missing."}, status=400)
+
+        model = joblib.load(model_path)
+        preprocessor = joblib.load(preprocessor_path)
+
+        # Load data
+        new_data = pd.read_csv(processed_file_path, encoding='ISO-8859-1', low_memory=False)
+
+        # Define the required columns
+        columns_to_keep = [
+            'net_income', 'total_liabilities', 'total_assets', 'total_employees',
+            'total_salary_wages_paid', 'refund_approved_amount', 'refund_frequency',
+            'taxpayer_type', 'filing_frequency', 'late_filing_count',
+            'total_sales_gst', 'gst_payable', 'sector_average_sales',
+            'gst_compliance_ratio', 'employee_wage_ratio', 'sales_to_asset_ratio',
+            'debt_to_asset_ratio', 'risk_score_gst', 'risk_score_swt',
+            'risk_score_refund', 'risk_score_cit'
+        ]
+         
+        ###Changes###
+        categorical_columns = ['taxpayer_type']  # Add other categorical columns if necessary
+        #numerical_columns = [col for col in columns_to_keep if col not in categorical_columns]
+
+
+        # Check for missing columns
+        missing_cols = [col for col in columns_to_keep if col not in new_data.columns]
+        if missing_cols:
+            return JsonResponse({"error": f"Missing columns in input data: {missing_cols}"}, status=400)
+
+
+        # Ensure data is numeric or string for preprocessing
+        new_data[columns_to_keep] = new_data[columns_to_keep].apply(pd.to_numeric, errors='coerce')
+        new_data[categorical_columns] = new_data[categorical_columns].fillna('Unknown').astype(str)
+
+        # Replace NaN and infinite values with 0
+        new_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+        new_data.fillna(0, inplace=True)
+        
+        # Replace unseen categories with a placeholder
+        known_categories = preprocessor.named_transformers_['cat'].categories_
+        for i, col in enumerate(categorical_columns):
+            new_data[col] = new_data[col].apply(lambda x: x if x in known_categories[i] else "Unknown")
+
+
+        # Ensure data types are compatible with the preprocessor
+        # Process data
+        X_new = new_data[columns_to_keep]
+        
+
+        # # Ensure it's a DataFrame with correct columns
+        # X_new = pd.DataFrame(X_new, columns=columns_to_keep)
+
+        # # Debugging checks
+        # if not isinstance(X_new, pd.DataFrame):
+            # return JsonResponse({"error": "X_new is not a DataFrame."}, status=400)
+
+        # if not all(col in X_new.columns for col in columns_to_keep):
+            # return JsonResponse({"error": "Input data is missing required columns for preprocessing."}, status=400)
+
+        # Apply transformation
+        X_new_preprocessed = preprocessor.transform(X_new)
+
+
+        # Predictions
+        new_data['fraud_probability'] = model.predict_proba(X_new_preprocessed)[:, 1]
+        new_data['fraud_prediction'] = model.predict(X_new_preprocessed)
+
+        # Save the output data
+        output_file_name = f"output_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        output_path = os.path.join(PREDICTED_DIRS, output_file_name)
+        new_data.to_csv(output_path, index=False)
+
+        # Convert DataFrame to JSON
+        new_data_json = new_data.to_dict(orient='records')
+        
+        # Save metadata in FilesMaster model
+        FilesMaster.objects.create(
+            file_name=f"{output_file_name}_predicted",
+            file_path_pd=output_path,
+            user_id=user,
+            status=1,
+            reason='Predicted CSV file',
+            file_state=3,
+            merge_status=True
+        )
+
+        return JsonResponse({
+            "status": "success",
+            "message": "Predictions completed successfully.",
+            "output_path": output_path,
+            "new_data": new_data_json
+        })
+
+    except Exception as e:
+        return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+
+
+#=====================================
+#END
+#=====================================
+
+# Define Raw Data Page
+def viewPredictedData(request):
+    # Query FilesMaster with the necessary fields and join with the User model
+    files = FilesMaster.objects.filter(file_state=3, merge_status=True).select_related('User').values(
+        'id',
+        'file_name',
+        'file_path_pd',
+        'created_date',
+        'modified_date',
+        'user_id__first_name',
+        'user_id__last_name'
+    )
+
+    records = []
+
+    # Process the query results
+    for file in files:
+        records.append({
+            "id": file['id'],
+            "file_id": file['id'],
+            "file_name": file['file_name'],
+            "file_path": file['file_path_pd'],
+            "uploaded_by": f"{file['user_id__first_name']} {file['user_id__last_name']}",
+            "created_at": file['created_date'].strftime("%Y-%m-%d %H:%M:%S"),
+            "modified_at": file['modified_date'].strftime("%Y-%m-%d %H:%M:%S"),
+        })
+
+    # Render the records in the view template
+    return render(request, 'data-managment/processed-data/view.html', {"records": records})
+
+def viewPredictedDataDetail(request, file_id):
+     # Retrieve the file record
+    file_record = get_object_or_404(FilesMaster, id=file_id)
+
+    # Read the CSV file and extract data
+    csv_data = []
+    try:
+        with open(file_record.file_path_pd, mode='r') as file:
+            csv_reader = csv.reader(file)
+            headers = next(csv_reader)  # Skip the header
+            for row in csv_reader:
+                csv_data.append(row)
+    except Exception as e:
+        print(f"Error reading CSV file: {e}")
+
+    # Paginate the data
+    paginator = Paginator(csv_data, 10)  # Show 10 rows per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Render template with paginated data
+    return render(request, 'data-managment/processed-data/view-data.html', {
+        'page_obj': page_obj,
+        'headers': headers,
+        'file_record': file_record,
+    })
 
 # Define View Process Data Page
 def viewProcessData(request):
@@ -393,6 +773,18 @@ def viewProcessData(request):
         records.append(record)
     return render(request, 'data-managment/processed-data/view.html', {"records": records})
 
+# View for file download
+def downloadPredictedFile(request, file_id):
+    file_record = get_object_or_404(FilesMaster, id=file_id)
+    file_path = file_record.file_path_pd
+
+    try:
+        with open(file_path, 'rb') as file:
+            response = HttpResponse(file.read(), content_type="application/octet-stream")
+            response['Content-Disposition'] = f'attachment; filename="{file_path}"'
+            return response
+    except FileNotFoundError:
+        raise Http404("File not found.")
 #Fraud Analytics View
 def viewFraudAnalyticsData(request):
     return render(request, 'dashboard/analytics/')

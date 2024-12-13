@@ -57,6 +57,10 @@ $(document).ready(function () {
             return;
         }
 
+         // Get the selected value
+         var selectedValue = $('#financial-filename').val();
+         $('#mergefilename').val(selectedValue).attr('value', selectedValue);
+
         // Use the form's action attribute to dynamically set the URL
         let uploadUrl = $(form).attr('action');
 
@@ -154,7 +158,8 @@ $(document).ready(function () {
             url: $(this).closest('form').attr('action'), // Get the form action dynamically
             type: 'POST',
             data: {
-                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val() // CSRF token
+                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(), // CSRF token
+                mergefilename: $('#mergefilename').val()
             },
             success: function (response) {
                 // Complete progress bar and stop interval
@@ -221,4 +226,138 @@ $(document).ready(function () {
         });
     });
 
+});
+
+//Process Data functionality
+$(document).ready(function () {
+    // Select all checkboxes functionality
+    $('#process-select-all').click(function () {
+        $('input[name="filemasterpaths[]"]').prop('checked', this.checked);
+    });
+
+    // Update the "Select All" checkbox based on individual checkbox changes
+    $('input[name="filemasterpaths[]"]').change(function () {
+        var allChecked = $('input[name="filemasterpaths[]"]').length === $('input[name="filemasterpaths[]"]:checked').length;
+        $('#process-select-all').prop('checked', allChecked);
+    });
+
+    // Process Raw Merge Files button click handler
+    $('#processFilesBtn').click(function () {
+        const selectedFiles = $('input[name="filemasterpaths[]"]:checked').map(function () {
+            return {
+                file_id: $(this).data('fileid'),
+                file_name: $(this).data('filename').replace('_final', ''),
+                file_path: $(this).val()
+            };
+        }).get();
+    
+        if (selectedFiles.length === 0) {
+            Swal.fire('Error', 'No files selected.', 'error');
+            return;
+        }
+    
+        // Use the form's action attribute to dynamically set the URL
+        let processFormUrl = $('#processForm').attr('action');
+
+        // Show progress bar
+        $('#progress-container').show();
+        $('#progress-bar').css('width', '0%').attr('aria-valuenow', 0).text('0%');
+
+        // Simulate progress bar increase
+        let interval = setInterval(() => {
+            let currentWidth = parseInt($('#progress-bar').attr('aria-valuenow'));
+            if (currentWidth < 90) {
+                currentWidth += 5;
+                $('#progress-bar').css('width', currentWidth + '%').attr('aria-valuenow', currentWidth).text(currentWidth + '%');
+            } else {
+                clearInterval(interval);
+            }
+        }, 300);
+    
+        $.ajax({
+            url: processFormUrl,
+            type: 'POST',
+            dataType: 'json',  // Expect JSON response
+            data: JSON.stringify({
+                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+                filePaths: selectedFiles,  // Sending the file paths as JSON
+            }),
+            contentType: 'application/json',  // Ensure the content type is JSON
+            success: function (response) {
+                if (response.status === 'success') {
+                    Swal.fire('Success', response.message, 'success').then(() => {
+                        // Optionally trigger the next step
+                        console.log(response.data_types);
+                        // Show progress bar before SweetAlert
+                         // Complete progress bar and stop interval
+                        clearInterval(interval);
+                        $('#progress-bar').css('width', '100%').attr('aria-valuenow', 100).text('100%');
+                        startPrediction(response.processed_file_path);
+                    });
+                } else {
+                    clearInterval(interval);
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: function () {
+                clearInterval(interval);
+                Swal.fire('Error', 'Something went wrong.', 'error');
+            },
+        });
+    });
+    
+    // Trigger prediction process
+    function startPrediction(processedFilePath) {
+        const startPredictionPath = '/data-management/start-prediction'; // Define the URL here or globally
+       // Show progress bar
+       $('#progress-container').show();
+       $('#progress-bar').css('width', '0%').attr('aria-valuenow', 0).text('0%');
+
+        // Simulate progress bar increase
+        let interval = setInterval(() => {
+        let currentWidth = parseInt($('#progress-bar').attr('aria-valuenow'));
+        if (currentWidth < 90) {
+            currentWidth += 5;
+            $('#progress-bar').css('width', currentWidth + '%').attr('aria-valuenow', currentWidth).text(currentWidth + '%');
+        } else {
+            clearInterval(interval);
+        }
+       }, 300);
+
+        $.ajax({
+            url: startPredictionPath,
+            type: 'POST',
+            data: JSON.stringify({
+                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+                processedFilePath: processedFilePath,
+            }),
+            contentType: 'application/json',
+            headers: {
+                'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+            },
+            success: function (response) {
+                if (response.status === 'success') {
+                      // Complete progress bar and stop interval
+                      clearInterval(interval);
+                      $('#progress-bar').css('width', '100%').attr('aria-valuenow', 100).text('100%');
+                        // Show success message and redirect on OK
+                        Swal.fire('Success', response.message, 'success').then((result) => {
+                            if (result.isConfirmed) {
+                                // Redirect to the predicted data page
+                                window.location = '/data-managment/predected-data/'; // Change URL to your actual route
+                            }
+                        });
+                } else {
+                    clearInterval(interval);
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: function (xhr) {
+                clearInterval(interval);
+                const errorMessage = xhr.responseJSON?.message || 'Prediction process failed.';
+                Swal.fire('Error', errorMessage, 'error');
+            }
+        });
+    }
+    
 });

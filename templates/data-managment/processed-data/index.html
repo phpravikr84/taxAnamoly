@@ -11,55 +11,58 @@
             Process Data
         </div>
         <div class="card-body">
-          <table id="datatablesSimple">
-            <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>File Name</th>
-                  <th>Created By</th>
-                  <th>Created At</th>
-                  <th>Modified At</th>
-                  <th>Action</th>
-                </tr>
-            </thead>
-            <tfoot>
-                <tr>
-                    <th>ID</th>
-                    <th>File Name</th>
-                    <th>Created By</th>
-                    <th>Created At</th>
-                    <th>Modified At</th>
-                    <th>Action</th>
-                </tr>
-            </tfoot>
-            <tbody>
-              {% for record in records %}
-              <tr>
-                  <td>{{ record.id }}</td>
-                  <td>{{ record.file_name }}</td>
-                  <td>{{ record.uploaded_by }}</td>
-                  <td>{{ record.created_at }}</td>
-                  <td>{{ record.modified_at }}</td>
-                  <td>
-                      <!-- View Button -->
-                      <button type="button" class="btn btn-primary btn-sm">
-                          <i class="bi bi-eye"></i> View
-                      </button>
-  
-                      <!-- Process Button -->
-                      <button type="button" class="btn btn-success btn-sm">
-                          <i class="bi bi-gear"></i> Predicted
-                      </button>
-  
-                      <!-- Delete Button -->
-                      <button type="button" class="btn btn-danger btn-sm">
-                          <i class="bi bi-trash"></i> Delete
-                      </button>
-                  </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-        </table>
+            <form id="processForm" action="ProcessRawFiles" method="post">
+                {% csrf_token %}
+                <table id="datatablesProcess" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="process-select-all">
+                                Select All
+                            </th>
+                            <th>ID</th>
+                            <th>File Name</th>
+                            <th>File Path</th>
+                            <th>Created By</th>
+                            <th>Created At</th>
+                            <th>Modified At</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <td colspan="7">
+                                <div id="progress-container" class="mt-3 mb-5" style="display:none;">
+                                    <div class="progress">
+                                        <div id="progress-bar" class="progress-bar bg-success" role="progressbar" 
+                                            style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                            0%
+                                        </div>
+                                    </div>
+                                </div>
+                                <form id="processForm" action="{% url 'data-management-predict' %}"  enctype="multipart/form-data" class="d-flex align-items-center gap-3">
+                                    {% csrf_token %}
+                                    <button type="button" id="processFilesBtn" class="btn btn-warning btn-sm btn-animated">
+                                        <i class="fas fa-cogs"></i> Process Raw Merge Files
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {% for record in records %}
+                        <tr>
+                            <td><input type="checkbox" name="filemasterpaths[]" data-fileid="{{ record.id }}" data-filename="{{ record.file_name }}" value="{{ record.file_path }}"></td>
+                            <td>{{ record.id }}</td>
+                            <td>{{ record.file_name }}</td>
+                            <td>{{ record.file_path }}</td>
+                            <td>{{ record.uploaded_by }}</td>
+                            <td>{{ record.created_at }}</td>
+                            <td>{{ record.modified_at }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>           
         </div>
     </div>
 </div>

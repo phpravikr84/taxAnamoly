@@ -9,7 +9,8 @@ class FilesMaster(models.Model):
     file_path_pr = models.CharField(max_length=255, null=True, blank=True)
     file_path_pd = models.CharField(max_length=255, null=True, blank=True)
     user_id = models.CharField(max_length=255)
-    parent_file_id = models.IntegerField(null=True, blank=True)
+    #parent_file_id = models.IntegerField(null=True, blank=True)
+    parent_file_id = models.CharField(max_length=255, null=True, blank=True)  # Changed to CharField
     status = models.IntegerField(choices=[(1, 'Success'), (2, 'Failure')])
     reason = models.TextField(null=True, blank=True)
     file_state = models.IntegerField(default=1, choices=[

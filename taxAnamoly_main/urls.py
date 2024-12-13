@@ -32,6 +32,11 @@ urlpatterns = [
     path('data-management/raw-data/delete-merge/', views.deleteMergeFile, name='delete-merge-file'),
     path('data-management/raw-data/merge_files/', views.merge_files, name='data-management-merge-files'),
     path('data-management/process-data/', views.processData, name='data-management-processed'),
-    path('data-management/process-data/view', views.viewProcessData, name='view-process-data'),
+    path('data-management/process-data/ProcessRawFiles', views.ProcessRawFiles, name='data-management-predict'),
+    path('data-management/start-prediction', views.make_predictions, name='data-management-start-prediction'),
+    #path('data-management/process-data/', views.viewProcessData, name='view-process-data'),
+    path('data-managment/predected-data/', views.viewPredictedData, name='data-management-predicted-data'),
+    path('data-managment/predected-data/view/<int:file_id>', views.viewPredictedDataDetail, name='data-management-predicted-data-view'),
+    path('data-managment/predected-data/download/<int:file_id>', views.downloadPredictedFile, name='data-management-predicted-data-download'),
     path('dashboard/analytics/', views.viewFraudAnalyticsData, name='dashboard-analytics'),
 ]

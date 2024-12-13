@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('file_path_pr', models.CharField(blank=True, max_length=255, null=True)),
                 ('file_path_pd', models.CharField(blank=True, max_length=255, null=True)),
                 ('user_id', models.CharField(max_length=255)),
-                ('parent_file_id', models.IntegerField(blank=True, null=True)),
+                ('parent_file_id', models.CharField(blank=True, max_length=255, null=True)),
                 ('status', models.IntegerField(choices=[(1, 'Success'), (2, 'Failure')])),
                 ('reason', models.TextField(blank=True, null=True)),
                 ('file_state', models.IntegerField(choices=[(1, 'Raw'), (2, 'Processed'), (3, 'Predicted'), (4, 'Analytics')], default=1)),
