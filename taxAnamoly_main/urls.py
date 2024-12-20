@@ -39,4 +39,17 @@ urlpatterns = [
     path('data-managment/predected-data/view/<int:file_id>', views.viewPredictedDataDetail, name='data-management-predicted-data-view'),
     path('data-managment/predected-data/download/<int:file_id>', views.downloadPredictedFile, name='data-management-predicted-data-download'),
     path('dashboard/analytics/', views.viewFraudAnalyticsData, name='dashboard-analytics'),
+     path('get_geojson/', views.get_geojson, name='get_geojson'),
+    path('get_predictions_data/<int:tax_period_year>/<int:fraud_detection>/', views.get_predictions_data, name='get_predictions_data'),
+    #Setting companySetting
+    path('settings/datacolumn-setting/', views.dataColumnSettingList, name='data-column-setting'),
+    path('settings/datacolumn-setting/add', views.dataColumnSettingAdd, name='data-column-setting-add'),
+    path('settings/datacolumn-setting/edit/<int:file_id>', views.dataColumnSettingEdit, name='data-column-setting-edit'),
+    path('settings/company/', views.companySetting, name='company-setting'),
+    path('settings/company/add', views.companySettingAdd, name='company-setting-add'),
+    path('settings/company/edit', views.companySettingEdit, name='company-setting-edit'),
+    #Pickel
+    path('settings/pickel-model/', views.pickelModelSetting, name='pickel-model-setting'),
+    path('settings/pickel-model/add', views.pickelModelSettingAdd, name='pickel-model-setting-add'),
+    path('settings/pickel-model/edit', views.pickelModelSettingEdit, name='pickel-model-setting-edit'),
 ]

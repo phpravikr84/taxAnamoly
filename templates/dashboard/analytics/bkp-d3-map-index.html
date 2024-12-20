@@ -1,0 +1,160 @@
+{% extends '../../layouts/master.html' %}
+{% block body %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Analytics -  Fraud Detection</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Fraud Detection</li>
+    </ol>
+
+    {% if messages %}
+        <div 
+            class="messages px-4 flash-screen mb-2 
+            {% if messages.0.tags == 'success' %}bg-success 
+            {% elif messages.0.tags == 'danger' %}bg-danger 
+            {% else %}bg-secondary 
+            {% endif %}">
+            {% for message in messages %}
+            <span 
+                class="alert {{ message.tags|default:'alert-danger' }} alert-dismissible fade show px-5" 
+                role="alert">
+                {{ message }}
+                <button type="button" class="btn-close crossbtn" data-bs-dismiss="alert" aria-label="Close"></button>
+            </span>
+            {% endfor %}
+        </div>
+    {% endif %}
+        
+    <div class="row">
+        <div class="col-md-4">
+            <label for="companySelect">Company Name</label>
+            <select id="companySelect" class="form-control">
+                <option value="">Select Company</option>
+                {% for taxpayer in taxpayer_names %}
+                    <option value="{{ taxpayer.taxpayer_name }}">{{ taxpayer.taxpayer_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label for="taxPeriodSelect">Tax Period</label>
+            <select id="taxPeriodSelect" class="form-control">
+                {% for year in years_range %}
+                    <option value="{{ year }}" {% if year == default_tax_period_year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label for="fraudDetectionSelect">Fraud Detection</label>
+            <select id="fraudDetectionSelect" class="form-control">
+                <option value="1">Fraud</option>
+                <option value="0">Not Fraud</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="card mb-4 mt-4">
+        <div class="card-header">
+            <i class="fas fa-chart-area me-1"></i>
+            Fraud Detection Map (Papua New Guinea)
+        </div>
+        <div class="card-body">
+            <div id="map" style="height: 600px;"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.0.0/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-zoom@3.0.0/dist/d3-zoom.min.js"></script>
+
+<script>
+    // Define the width and height of the map
+    const width = 960;
+    const height = 600;
+    
+    // Define the projection for Papua New Guinea
+    const projection = d3.geoMercator()
+        .center([147, -6])  // PNG's center coordinates
+        .scale(1200)
+        .translate([width / 2, height / 2]);
+    
+    // Define the path generator using D3.js
+    const path = d3.geoPath().projection(projection);
+    
+    // Create an SVG element to hold the map
+    const svg = d3.select('#map')
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height);
+    
+    // Load the Papua New Guinea GeoJSON data
+    d3.json("/media/countries.geojson").then(function(geojsonData) {
+        // Draw the map with grey color for PNG
+        svg.selectAll('path')
+            .data(geojsonData.features)
+            .enter()
+            .append('path')
+            .attr('d', path)
+            .attr('fill', 'grey') // Grey color for PNG
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 1)
+            .attr('class', 'country');
+    
+        // Add fraud detection heatmap
+        var heatData = [];
+    
+        // Function to update heatmap based on fraud data
+        function updateMap(taxPeriodYear, fraudDetection) {
+            // Clear previous heat data
+            heatData = [];
+    
+            fetch(`/get_predictions_data/${taxPeriodYear}/${fraudDetection}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Collect latitude, longitude, and fraud_prediction
+                    data.forEach(function(prediction) {
+                        if (prediction.latitude && prediction.longitude) {
+                            // Add data to heatmap (latitude, longitude, fraud probability)
+                            heatData.push([prediction.longitude, prediction.latitude, prediction.fraud_prediction]);
+                        }
+                    });
+    
+                    // Update the heatmap layer
+                    drawHeatmap();
+                })
+                .catch(error => console.error("Error fetching prediction data:", error));
+        }
+    
+        // Draw the heatmap
+        function drawHeatmap() {
+            // Create heatmap circles for fraud data
+            svg.selectAll('.heatmap-circle').remove(); // Remove old circles
+    
+            svg.selectAll('.heatmap-circle')
+                .data(heatData)
+                .enter()
+                .append('circle')
+                .attr('class', 'heatmap-circle')
+                .attr('cx', d => projection([d[0], d[1]])[0])
+                .attr('cy', d => projection([d[0], d[1]])[1])
+                .attr('r', d => d[2] * 10) // Set radius based on fraud probability
+                .attr('fill', 'red')
+                .attr('opacity', 0.7);
+        }
+    
+        // Initial load for the default tax period year and fraud status (Fraud = 1)
+        updateMap(2022, 1);  // You can change 2022 to the `default_tax_period_year` from your backend
+    });
+    
+    // Event listeners for select changes (tax period and fraud detection)
+    document.getElementById("taxPeriodSelect").addEventListener("change", function() {
+        updateMap(this.value, document.getElementById("fraudDetectionSelect").value);
+    });
+    
+    document.getElementById("fraudDetectionSelect").addEventListener("change", function() {
+        updateMap(document.getElementById("taxPeriodSelect").value, this.value);
+    });
+</script>
+
+{% endblock %}

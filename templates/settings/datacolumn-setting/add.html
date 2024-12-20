@@ -1,0 +1,48 @@
+{% extends '../../layouts/master.html' %}
+{% block body %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4 custom-header">Data Column Setting</h1>
+    <ol class="breadcrumb mb-4 custom-breadcrumb">
+        <li class="breadcrumb-item active">Data Column</li>
+    </ol>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Data Column Setting - Add
+        </div>
+        <div class="card-body">
+            <!-- add.html and edit.html similar, with form adjustments -->
+            <form method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <label for="fileType">File Type</label>
+                        <select id="financial-filename" class="form-select" name="file_name">
+                            <option value="">Select Financial Filename</option>
+                            <option value="gst" {% if form.file_name.value == "gst" %}selected{% endif %}>GST</option>
+                            <option value="cit" {% if form.file_name.value == "cit" %}selected{% endif %}>CIT</option>
+                            <option value="swt" {% if form.file_name.value == "swt" %}selected{% endif %}>SWT</option>
+                            <option value="non_ind_reg" {% if form.file_name.value == "non_ind_reg" %}selected{% endif %}>Non Ind Reg</option>
+                            <option value="gst_refund" {% if form.file_name.value == "gst_refund" %}selected{% endif %}>GST Refund</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <label for="datacolumn-name">Data Column Name</label>
+                        {{ form.column_name }}
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <label for="datacolumn-slug">Data Column Slug</label>
+                        {{ form.column_slug }}
+                    </div>
+                    <div class="col-md-6 form-check mb-4">
+                        {{ form.status }}
+                    </div>
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-warning">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock body %}

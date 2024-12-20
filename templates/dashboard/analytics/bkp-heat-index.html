@@ -1,0 +1,70 @@
+{% extends '../../layouts/master.html' %}
+
+{% block body %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Analytics - Fraud Detection</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Fraud Detection</li>
+    </ol>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <label for="taxpayer_names">Company </label>
+            <select id="taxPeriodSelect" class="form-control">
+                {% for name in taxpayer_names %}
+                    <option value="{{ name }}">{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="taxPeriodSelect">Tax Period</label>
+            <select id="taxPeriodSelect" class="form-control">
+                {% for year in years_range %}
+                    <option value="{{ year }}" {% if year == tax_period_year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label for="fraudDetectionSelect">Fraud Detection</label>
+            <select id="fraudDetectionSelect" class="form-control">
+                <option value="1" {% if fraud_prediction == '1' %}selected{% endif %}>Fraud</option>
+                <option value="0" {% if fraud_prediction == '0' %}selected{% endif %}>Not Fraud</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="card mb-4 mt-4">
+        <div class="card-header">
+            <i class="fas fa-chart-area me-1"></i>
+            Fraud Detection HeatMap (Papua New Guinea)
+        </div>
+        <div class="card-body">
+            <div id="map-container">
+                {{ map_html|safe }}  <!-- Ensure the map HTML is rendered correctly -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('taxPeriodSelect').addEventListener('change', updateMap);
+    document.getElementById('fraudDetectionSelect').addEventListener('change', updateMap);
+
+    function updateMap() {
+        const taxPeriodYear = document.getElementById('taxPeriodSelect').value;
+        const fraudDetection = document.getElementById('fraudDetectionSelect').value;
+
+        fetch(`?tax_period_year=${taxPeriodYear}&fraud_prediction=${fraudDetection}`)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newMap = doc.getElementById('map-container').innerHTML;
+
+                document.getElementById('map-container').innerHTML = newMap;
+            })
+            .catch(error => console.error("Error updating map:", error));
+    }
+</script>
+{% endblock %}

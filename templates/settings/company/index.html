@@ -1,0 +1,137 @@
+{% extends '../../layouts/master.html' %}
+{% block body %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4 custom-header">Company Setting</h1>
+    <ol class="breadcrumb mb-4 custom-breadcrumb">
+        <li class="breadcrumb-item active">Data Column</li>
+    </ol>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Data Column
+        </div>
+        <div class="card-body">
+            <table id="datatablesSimple">
+                <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>TIN</th>
+                      <th>Taxpayer Name (Company Name)</th>
+                      <th>Created At</th>
+                      <th>Modified At</th>
+                      <th>Action</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>ID</th>
+                      <th>TIN</th>
+                      <th>Taxpayer Name (Company Name)</th>
+                      <th>Created At</th>
+                      <th>Modified At</th>
+                      <th>Action</th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>500000009</td>
+                      <td>WESTPAC BANK (PNG) LTD</td>
+                      <td>2024-12-05</td>
+                      <td>2024-12-05</td>
+                        <td>
+                          <!-- View Button -->
+                          <!-- View Button with link to the viewRawData view -->
+                            <a href="#" tooltip="view" class="btn btn-primary btn-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                                  </svg>
+                            </a>
+      
+                            <!-- Delete Button -->
+                            <button type="button" class="btn btn-danger del-merge-btn" tooltip="delete" data-file-id="{{ record.id }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                </svg>
+                            </button>                        
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>500000036</td>
+                        <td>BSP FINANCIAL GROUP LIMITED</td>
+                        <td>2024-12-05</td>
+                        <td>2024-12-05</td>
+                          <td>
+                            <!-- View Button -->
+                            <!-- View Button with link to the viewRawData view -->
+                              <a href="#" tooltip="view" class="btn btn-primary btn-sm">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                                    </svg>
+                              </a>
+        
+                              <!-- Delete Button -->
+                              <button type="button" class="btn btn-danger del-merge-btn" tooltip="delete" data-file-id="{{ record.id }}">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                      <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                  </svg>
+                              </button>                        
+                          </td>
+                      </tr>
+                      <tr>
+                        <td>3</td>
+                        <td>500000045</td>
+                        <td>PNG WATER LIMITED</td>
+                        <td>2024-12-05</td>
+                        <td>2024-12-05</td>
+                          <td>
+                            <!-- View Button -->
+                            <!-- View Button with link to the viewRawData view -->
+                              <a href="#" tooltip="view" class="btn btn-primary btn-sm">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                                    </svg>
+                              </a>
+        
+                              <!-- Delete Button -->
+                              <button type="button" class="btn btn-danger del-merge-btn" tooltip="delete" data-file-id="{{ record.id }}">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                      <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                  </svg>
+                              </button>                        
+                          </td>
+                      </tr>
+                      <tr>
+                        <td>4</td>
+                        <td>500000054</td>
+                        <td>KINA BANK LIMITED</td>
+                        <td>2024-12-05</td>
+                        <td>2024-12-05</td>
+                          <td>
+                            <!-- View Button -->
+                            <!-- View Button with link to the viewRawData view -->
+                              <a href="#" tooltip="view" class="btn btn-primary btn-sm">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                                    </svg>
+                              </a>
+        
+                              <!-- Delete Button -->
+                              <button type="button" class="btn btn-danger del-merge-btn" tooltip="delete" data-file-id="{{ record.id }}">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                      <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                  </svg>
+                              </button>                        
+                          </td>
+                      </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock body %}

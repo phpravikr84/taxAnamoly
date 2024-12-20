@@ -15,17 +15,67 @@
             <table id="datatablesSimple" class="table">
                 <thead>
                     <tr>
-                        {% for header in headers %}
-                        <th>{{ header }}</th>
-                        {% endfor %}
+                        <th>TIN</th>
+                        <th>Tax Period Year</th>
+                        <th>Net Income</th>
+                        <th>Total Liabilities</th>
+                        <th>Total Assets</th>
+                        <th>Total Employees</th>
+                        <th>Total Salary Wages Paid</th>
+                        <th>Refund Approved Amount</th>
+                        <th>Refund Frequency</th>
+                        <th>Taxpayer Name</th>
+                        <th>Taxpayer Type</th>
+                        <th>Sector Activity</th>
+                        <th>Filing Frequency</th>
+                        <th>Late Filing Count</th>
+                        <th>Total Sales GST</th>
+                        <th>GST Payable</th>
+                        <th>Sector Average Sales</th>
+                        <th>GST Compliance Ratio</th>
+                        <th>Employee Wage Ratio</th>
+                        <th>Sales to Asset Ratio</th>
+                        <th>Debt to Asset Ratio</th>
+                        <th>Risk Score GST</th>
+                        <th>Risk Score SWT</th>
+                        <th>Risk Score Refund</th>
+                        <th>Risk Score CIT</th>
+                        <th>Total Risk Score</th>
+                        <th>Fraud Probability</th>
+                        <th>Fraud Detection</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for row in page_obj %}
-                    <tr class="{% if row|last == 1 %}bg-danger text-white{% endif %}">
-                        {% for cell in row %}
-                        <td>{{ cell }} {% if cell == '1' %}<span class="text-danger"> (Fraud Detect)</span>{% endif %}</td>
-                        {% endfor %}
+                    {% for prediction in page_obj %}
+                    <tr>
+                        <td>{{ prediction.tin }}</td>
+                        <td>{{ prediction.tax_period_year }}</td>
+                        <td>{{ prediction.net_income }}</td>
+                        <td>{{ prediction.total_liabilities }}</td>
+                        <td>{{ prediction.total_assets }}</td>
+                        <td>{{ prediction.total_employees }}</td>
+                        <td>{{ prediction.total_salary_wages_paid }}</td>
+                        <td>{{ prediction.refund_approved_amount }}</td>
+                        <td>{{ prediction.refund_frequency }}</td>
+                        <td>{{ prediction.taxpayer_name }}</td>
+                        <td>{{ prediction.taxpayer_type }}</td>
+                        <td>{{ prediction.sector_activity }}</td>
+                        <td>{{ prediction.filing_frequency }}</td>
+                        <td>{{ prediction.late_filing_count }}</td>
+                        <td>{{ prediction.total_sales_gst }}</td>
+                        <td>{{ prediction.gst_payable }}</td>
+                        <td>{{ prediction.sector_average_sales }}</td>
+                        <td>{{ prediction.gst_compliance_ratio }}</td>
+                        <td>{{ prediction.employee_wage_ratio }}</td>
+                        <td>{{ prediction.sales_to_asset_ratio }}</td>
+                        <td>{{ prediction.debt_to_asset_ratio }}</td>
+                        <td>{{ prediction.risk_score_gst }}</td>
+                        <td>{{ prediction.risk_score_swt }}</td>
+                        <td>{{ prediction.risk_score_refund }}</td>
+                        <td>{{ prediction.risk_score_cit }}</td>
+                        <td>{{ prediction.total_risk_score }}</td>
+                        <td>{{ prediction.fraud_probability }}</td>
+                        <td>{% if prediction.fraud_prediction == 1 %} <span class="text-danger">Fraud</span> {% else %} <span class="text-success">Not Fraud</span> {% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

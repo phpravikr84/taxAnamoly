@@ -1,0 +1,33 @@
+{% extends '../../layouts/master.html' %}
+{% block body %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4 custom-header">Pickel Model Setting</h1>
+    <ol class="breadcrumb mb-4 custom-breadcrumb">
+        <li class="breadcrumb-item active">Pickel Model - Edit</li>
+    </ol>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Pickel Model - Edit
+        </div>
+        <div class="card-body">
+            <form method="post" action="">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <label for="pickel-filename">Pickel File Name</label>
+                        <input type="text" class="form-control" id="pickel_file_name" placeholder="Pickel File Name">
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <label for="pickel_file_path">Pickel File Path</label>
+                        <input type="file" class="form-control" id="pickel_file_path" placeholder="Pickel File Path">
+                    </div>
+                    <div class="cold-md-12 form-check mb-4">
+                        <button type="button" class="btn btn-warning" id="merge-btn">Submit Data Column</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock body %}

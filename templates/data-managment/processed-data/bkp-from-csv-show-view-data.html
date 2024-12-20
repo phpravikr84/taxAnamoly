@@ -1,0 +1,67 @@
+{% extends '../../layouts/master.html' %}
+
+{% block body %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4 custom-header">Data Management</h1>
+    <ol class="breadcrumb mb-4 custom-breadcrumb">
+        <li class="breadcrumb-item active">Predicted Data</li>
+    </ol>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Predicted Data
+        </div>
+        <div class="card-body table-responsive">
+            <table id="datatablesSimple" class="table">
+                <thead>
+                    <tr>
+                        {% for header in headers %}
+                        <th>{{ header }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in page_obj %}
+                    <tr class="{% if row|last == 1 %}bg-danger text-white{% endif %}">
+                        {% for cell in row %}
+                        <td>{{ cell }} {% if cell == '1' %}<span class="text-danger"> (Fraud Detect)</span>{% endif %}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <!-- Pagination Controls -->
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; first</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>            
+        </div>
+    </div>
+</div>
+<style>
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling for mobile devices */
+    }
+
+    .bg-danger {
+        background-color: #dc3545 !important;
+    }
+
+    .text-white {
+        color: #ffffff !important;
+    }
+</style>
+{% endblock body %}

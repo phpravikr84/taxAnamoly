@@ -3,6 +3,7 @@ import time
 import csv
 import pandas as pd
 import numpy as np
+from django.db import transaction
 from django.http import HttpResponse, JsonResponse, Http404
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect, get_object_or_404
@@ -13,9 +14,11 @@ from django.contrib import messages, auth
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from .forms import CSVUploadForm
+from .forms import DataColumnSettingForm
 from .utils import preprocess_csv
 from filemasters.models import FilesMaster 
 from accounts.models import User
+from datacolumnsettings.models import DataColumnSettings
 from django.utils.timezone import now
 from django.conf import settings
 from django.core.paginator import Paginator
@@ -26,8 +29,12 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, roc_auc_score
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
-
-
+from predictions.models import Prediction
+from .location_data import LocationData
+import random
+from django.db.models import Max, Min
+import folium
+from folium.plugins import HeatMap
 
 MEDIA_DIR = 'media/csv/'
 MEDIA_DIR_MERGE = 'media/csv/merge/'
@@ -668,7 +675,7 @@ def make_predictions(request):
         new_data_json = new_data.to_dict(orient='records')
         
         # Save metadata in FilesMaster model
-        FilesMaster.objects.create(
+        fileMst = FilesMaster.objects.create(
             file_name=f"{output_file_name}_predicted",
             file_path_pd=output_path,
             user_id=user,
@@ -677,7 +684,14 @@ def make_predictions(request):
             file_state=3,
             merge_status=True
         )
-
+        
+        #Get Inserted File Id
+        insertedId = fileMst.id
+        #Save Filedata in Predictions 
+        response = addPredictedDataDetail(output_path, insertedId)
+        # if response["status"] != "success":
+        #     return JsonResponse({"error": response["message"]}, status=400)
+        
         return JsonResponse({
             "status": "success",
             "message": "Predictions completed successfully.",
@@ -688,10 +702,91 @@ def make_predictions(request):
     except Exception as e:
         return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
 
-
 #=====================================
 #END
 #=====================================
+
+#Insert File record in Predictions_prediction table
+
+def addPredictedDataDetail(file_path, file_id):
+    try:
+        # Initialize a cache to store lat and lng for each TIN
+        tin_location_cache = {}
+
+        # Open the CSV file
+        with open(file_path, mode='r') as file:
+            csv_reader = csv.reader(file)
+            headers = next(csv_reader)  # Read the header row
+
+            # Create a mapping of header names to their indices
+            header_index = {header: index for index, header in enumerate(headers)}
+
+            # Prepare a list for batch inserts
+            predictions = []
+
+            # Loop through the rows
+            for row in csv_reader:
+                # Check for duplicates based on TIN and tax_period_year
+                tin = int(row[header_index["tin"]]) if row[header_index["tin"]] else None
+                tax_period_year = int(row[header_index["tax_period_year"]]) if row[header_index["tax_period_year"]] else None
+
+                
+                if tin and tax_period_year:
+                    # Check if a record already exists
+                    if Prediction.objects.filter(tin=tin, tax_period_year=tax_period_year).exists():
+                        continue  # Skip duplicates
+
+                    # Use cached location if TIN already exists, otherwise assign a new random location
+                    if tin in tin_location_cache:
+                        location = tin_location_cache[tin]
+                    else:
+                        location = random.choice(LocationData.DATA)
+                        tin_location_cache[tin] = location  # Cache the location for this TIN
+
+                # Add to batch insert list
+                predictions.append(Prediction(
+                    tin=tin,
+                    tax_period_year=tax_period_year,
+                    net_income=float(row[header_index["net_income"]]) if row[header_index["net_income"]] else None,
+                    total_liabilities=float(row[header_index["total_liabilities"]]) if row[header_index["total_liabilities"]] else None,
+                    total_assets=float(row[header_index["total_assets"]]) if row[header_index["total_assets"]] else None,
+                    total_employees=float(row[header_index["total_employees"]]) if row[header_index["total_employees"]] else None,
+                    total_salary_wages_paid=float(row[header_index["total_salary_wages_paid"]]) if row[header_index["total_salary_wages_paid"]] else None,
+                    refund_approved_amount=float(row[header_index["refund_approved_amount"]]) if row[header_index["refund_approved_amount"]] else None,
+                    refund_frequency=float(row[header_index["refund_frequency"]]) if row[header_index["refund_frequency"]] else None,
+                    taxpayer_name=row[header_index["taxpayer_name"]] if row[header_index["taxpayer_name"]] else None,
+                    taxpayer_type=row[header_index["taxpayer_type"]] if row[header_index["taxpayer_type"]] else None,
+                    sector_activity=row[header_index["sector_activity"]] if row[header_index["sector_activity"]] else None,
+                    filing_frequency=float(row[header_index["filing_frequency"]]) if row[header_index["filing_frequency"]] else None,
+                    late_filing_count=float(row[header_index["late_filing_count"]]) if row[header_index["late_filing_count"]] else None,
+                    total_sales_gst=float(row[header_index["total_sales_gst"]]) if row[header_index["total_sales_gst"]] else None,
+                    gst_payable=float(row[header_index["gst_payable"]]) if row[header_index["gst_payable"]] else None,
+                    sector_average_sales=float(row[header_index["sector_average_sales"]]) if row[header_index["sector_average_sales"]] else None,
+                    gst_compliance_ratio=float(row[header_index["gst_compliance_ratio"]]) if row[header_index["gst_compliance_ratio"]] else None,
+                    employee_wage_ratio=float(row[header_index["employee_wage_ratio"]]) if row[header_index["employee_wage_ratio"]] else None,
+                    sales_to_asset_ratio=float(row[header_index["sales_to_asset_ratio"]]) if row[header_index["sales_to_asset_ratio"]] else None,
+                    debt_to_asset_ratio=float(row[header_index["debt_to_asset_ratio"]]) if row[header_index["debt_to_asset_ratio"]] else None,
+                    risk_score_gst=int(row[header_index["risk_score_gst"]]) if row[header_index["risk_score_gst"]] else None,
+                    risk_score_swt=int(row[header_index["risk_score_swt"]]) if row[header_index["risk_score_swt"]] else None,
+                    risk_score_refund=int(row[header_index["risk_score_refund"]]) if row[header_index["risk_score_refund"]] else None,
+                    risk_score_cit=int(row[header_index["risk_score_cit"]]) if row[header_index["risk_score_cit"]] else None,
+                    total_risk_score=int(row[header_index["total_risk_score"]]) if row[header_index["total_risk_score"]] else None,
+                    fraud_probability=float(row[header_index["fraud_probability"]]) if row[header_index["fraud_probability"]] else None,
+                    fraud_prediction = int(row[header_index["fraud_prediction"]]) if row[header_index["fraud_prediction"]].strip() else None,
+                    latitude=location['lat'],
+                    longitude=location['lng'],
+                    file_id=file_id,
+                ))
+
+            # Perform batch insert for better performance
+            if predictions:
+                with transaction.atomic():
+                    Prediction.objects.bulk_create(predictions)
+
+        return True  # Success
+
+    except Exception as e:
+        return str(e)  # Error message
 
 # Define Raw Data Page
 def viewPredictedData(request):
@@ -723,33 +818,52 @@ def viewPredictedData(request):
     # Render the records in the view template
     return render(request, 'data-managment/processed-data/view.html', {"records": records})
 
+# def viewPredictedDataDetail(request, file_id):
+#      # Retrieve the file record
+#     file_record = get_object_or_404(FilesMaster, id=file_id)
+
+#     # Read the CSV file and extract data
+#     csv_data = []
+#     try:
+#         with open(file_record.file_path_pd, mode='r') as file:
+#             csv_reader = csv.reader(file)
+#             headers = next(csv_reader)  # Skip the header
+#             for row in csv_reader:
+#                 csv_data.append(row)
+#     except Exception as e:
+#         print(f"Error reading CSV file: {e}")
+
+#     # Paginate the data
+#     paginator = Paginator(csv_data, 10)  # Show 10 rows per page
+#     page_number = request.GET.get('page')
+#     page_obj = paginator.get_page(page_number)
+
+#     # Render template with paginated data
+#     return render(request, 'data-managment/processed-data/view-data.html', {
+#         'page_obj': page_obj,
+#         'headers': headers,
+#         'file_record': file_record,
+#     })
+
+
 def viewPredictedDataDetail(request, file_id):
-     # Retrieve the file record
+    # Retrieve the file record
     file_record = get_object_or_404(FilesMaster, id=file_id)
 
-    # Read the CSV file and extract data
-    csv_data = []
-    try:
-        with open(file_record.file_path_pd, mode='r') as file:
-            csv_reader = csv.reader(file)
-            headers = next(csv_reader)  # Skip the header
-            for row in csv_reader:
-                csv_data.append(row)
-    except Exception as e:
-        print(f"Error reading CSV file: {e}")
+    # Retrieve the predictions for the specific file_id
+    predictions = Prediction.objects.filter(file_id=file_id)
 
     # Paginate the data
-    paginator = Paginator(csv_data, 10)  # Show 10 rows per page
+    paginator = Paginator(predictions, 10)  # Show 10 rows per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     # Render template with paginated data
     return render(request, 'data-managment/processed-data/view-data.html', {
         'page_obj': page_obj,
-        'headers': headers,
         'file_record': file_record,
     })
-
+    
 # Define View Process Data Page
 def viewProcessData(request):
     # Create a Faker instance
@@ -785,6 +899,132 @@ def downloadPredictedFile(request, file_id):
             return response
     except FileNotFoundError:
         raise Http404("File not found.")
-#Fraud Analytics View
+    
 def viewFraudAnalyticsData(request):
-    return render(request, 'dashboard/analytics/')
+    # Get unique taxpayer names (company names)
+    taxpayer_names = Prediction.objects.values_list('taxpayer_name', flat=True).distinct()
+
+    # Get minimum and maximum tax period year
+    min_year = Prediction.objects.aggregate(Min('tax_period_year'))['tax_period_year__min']
+    max_year = Prediction.objects.aggregate(Max('tax_period_year'))['tax_period_year__max']
+
+    # Create a list of years from min_year to max_year
+    years_range = list(range(min_year, max_year + 1))
+
+    # Get filters from request (default to max_year and all fraud values)
+    tax_period_year = request.GET.get('tax_period_year', max_year)
+    fraud_prediction = request.GET.get('fraud_prediction')  # Can be None, '1', or '0'
+
+    # Filter predictions based on year and fraud prediction (if provided)
+    predictions = Prediction.objects.filter(tax_period_year=tax_period_year)
+    if fraud_prediction in ['0', '1']:
+        predictions = predictions.filter(fraud_prediction=int(fraud_prediction))
+
+    # Generate the map (only once) and center it based on the first prediction with valid data
+    if predictions.exists():
+        first_prediction = predictions.first()
+        map_object = folium.Map(location=[first_prediction.latitude, first_prediction.longitude], zoom_start=6)
+    else:
+        # If no predictions exist, create a default map center
+        map_object = folium.Map(location=[48.0, 5.0], zoom_start=6)  # Default location
+
+    # Create a list of locations and intensities for the HeatMap
+    heat_data = []
+    for prediction in predictions:
+        if prediction.fraud_prediction == 1:
+            latitude = float(prediction.latitude)
+            longitude = float(prediction.longitude)
+
+            if latitude and longitude:
+                print(f"Adding to heatmap: Latitude: {latitude}, Longitude: {longitude}")
+                heat_data.append([latitude, longitude, 1])  # Add intensity for fraud locations
+
+                # For debugging: Add markers for each fraud location
+                folium.CircleMarker([latitude, longitude], radius=5, color='red', fill=True).add_to(map_object)
+
+    # Add HeatMap to the map if heat_data is not empty
+    if heat_data:
+        HeatMap(heat_data, radius=25, max_zoom=15).add_to(map_object)
+        print("HeatMap added to map.")
+    else:
+        print("No fraud data found for heatmap")
+
+    # Render the map as HTML
+    map_html = map_object._repr_html_()
+
+    # Prepare data for rendering
+    return render(request, 'dashboard/analytics/index.html', {
+        'taxpayer_names': taxpayer_names,
+        'min_year': min_year,
+        'max_year': max_year,
+        'years_range': years_range,
+        'fraud_values': [0, 1],  # Fraud can either be 0 or 1
+        'predictions': predictions,
+        'default_tax_period_year': tax_period_year,
+        'map_html': map_html,  # Pass the generated map HTML
+    })
+
+    
+def get_geojson(request):
+    file_path = os.path.join(settings.MEDIA_ROOT, 'countries.geojson')
+    with open(file_path, 'r') as file:
+        geojson_data = json.load(file)
+    return JsonResponse(geojson_data)
+
+# Optionally, leave the original JSON response for API usage
+def get_predictions_data(request, tax_period_year, fraud_detection):
+    predictions = Prediction.objects.filter(tax_period_year=tax_period_year, fraud_prediction=fraud_detection)
+    
+    data = [
+        {
+            'latitude': float(prediction.latitude),
+            'longitude': float(prediction.longitude),
+            'fraud_prediction': prediction.fraud_prediction,
+        }
+        for prediction in predictions if prediction.latitude and prediction.longitude
+    ]
+    
+    return JsonResponse(data, safe=False)
+
+#Setting Rules
+# View to list all data column settings
+def dataColumnSettingList(request):
+    settings = DataColumnSettings.objects.all()
+    return render(request, 'settings/datacolumn-setting/index.html', {'settings': settings})
+
+# View to add a new data column setting
+def dataColumnSettingAdd(request):
+    if request.method == 'POST':
+        form = DataColumnSettingForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('data-column-setting')  # Redirect to the list view
+    else:
+        form = DataColumnSettingForm()
+    return render(request, 'settings/datacolumn-setting/add.html', {'form': form})
+
+# View to edit an existing data column setting
+def dataColumnSettingEdit(request, id):
+    setting = DataColumnSetting.objects.get(id)
+    if request.method == 'POST':
+        form = DataColumnSettingForm(request.POST, instance=setting)
+        if form.is_valid():
+            form.save()
+            return redirect('data-column-setting')  # Redirect to the list view
+    else:
+        form = DataColumnSettingForm(instance=setting)
+    return render(request, 'settings/datacolumn-setting/edit.html', {'form': form})
+#Company Management
+def companySetting(request):
+    return render(request, 'settings/company/index.html')
+def companySettingAdd(request):
+    return render(request, 'settings/company/add.html')
+def companySettingEdit(request):
+    return render(request, 'settings/company/edit.html')
+#Pickel Managment
+def pickelModelSetting(request):
+    return render(request, 'settings/pickel-model/index.html')
+def pickelModelSettingAdd(request):
+    return render(request, 'settings/pickel-model/add.html')
+def pickelModelSettingEdit(request):
+    return render(request, 'settings/pickel-model/edit.html')
