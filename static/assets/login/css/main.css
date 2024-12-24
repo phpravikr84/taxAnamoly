@@ -232,7 +232,7 @@ iframe {
 }
 
 .input100 {
-  font-family: Poppins-Medium;
+  /* font-family: Poppins-Medium;
   font-size: 15px;
   line-height: 1.5;
   color: #666666;
@@ -242,7 +242,18 @@ iframe {
   background: #e6e6e6;
   height: 50px;
   border-radius: 25px;
+  padding: 0 30px 0 68px; */
+  font-family: Poppins-Medium;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #666666;
+  display: block;
+  width: 100%;
+  background: transparent;
+  height: 50px;
+  /* border-radius: 25px; */
   padding: 0 30px 0 68px;
+  border-bottom: solid 1px #666666;
 }
 
 
@@ -251,7 +262,7 @@ iframe {
 .focus-input100 {
   display: block;
   position: absolute;
-  border-radius: 25px;
+  /* border-radius: 25px; */
   bottom: 0;
   left: 0;
   z-index: -1;

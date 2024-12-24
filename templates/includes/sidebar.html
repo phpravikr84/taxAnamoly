@@ -32,13 +32,13 @@
                 </ul>
             </li>
             <li class="">
-                <a href="#anaLytics" data-toggle="collapse" aria-expanded="{% if request.path|slice:":25" == '/analytics/predicted' or request.path|slice:":23" == '/analytics/fraud' %} true {% else %} false {% endif %}" 
-                class="dropdown-toggle {% if request.path|slice:":25" == '/analytics/predicted' or request.path|slice:":23" == '/analytics/fraud' %} dr_active {% endif %}">Analytics</a>
-                <ul class="collapse list-unstyled {% if request.path|slice:":25" == '/analytics/predicted' or request.path|slice:":23" == '/analytics/fraud' %} show {% endif %}" id="anaLytics">
+                <a href="#anaLytics" data-toggle="collapse" aria-expanded="{% if request.path|slice:":25" == '/analytics/predicted' or request.path|slice:":23" == '/dashboard/analytics/' %} true {% else %} false {% endif %}" 
+                class="dropdown-toggle {% if request.path|slice:":25" == '/analytics/predicted' or request.path|slice:":23" == '/dashboard/analytics/' %} dr_active {% endif %}">Analytics</a>
+                <ul class="collapse list-unstyled {% if request.path|slice:":25" == '/analytics/predicted' or request.path|slice:":23" == '/dashboard/analytics/' %} show {% endif %}" id="anaLytics">
                     <li class="{% if request.path == '/analytics/predicted' %} active {% endif %}">
                         <a class="nav-link" href="#">Predicted Results</a>
                     </li>
-                    <li class="{% if request.path == '/analytics/fraud' %} active {% endif %}">
+                    <li class="{% if request.path == '/dashboard/analytics/' %} active {% endif %}">
                         <a class="nav-link" href="{% url 'dashboard-analytics' %}">Fraud Analytics Report</a>
                     </li>
                 </ul>
