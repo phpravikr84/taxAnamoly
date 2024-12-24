@@ -2,8 +2,8 @@
     <nav id="sidebar">
         <div class="sidebar-header text-center">
             <img src="{% static 'assets/img/logo.png' %}" class="img-fluid" style="width: 55%;"/>
-            <h3 style="font-size: 1rem !important; font-weight: 600  !important; margin-top: 10px;">Tax Anomaly</h3>
-            <h4 style="font-size: 1rem !important; font-weight: 400  !important; margin-top: 10px;">Sub Heading</h4>
+            <h3 style="font-size: 1rem !important; font-weight: 600  !important; margin-top: 10px; color: #fff;">Tax Anomaly</h3>
+            <h4 style="font-size: 1rem !important; font-weight: 400  !important; margin-top: 10px; color: #fff;">Sub Heading</h4>
         </div>
 
         <ul class="list-unstyled components">
@@ -14,9 +14,9 @@
 				<a class="fload" href="{% url 'dashboard' %}"><i class="fas fa-chart-line"></i>&nbsp; Dashboard</a>
 			</li>
             <li class="">
-                <a href="#dataMngmnt" data-toggle="collapse" aria-expanded="{% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data' or request.path|slice:":23" == '/data-management/predected-data' %} true {% else %} false {% endif %}" 
-                class="dropdown-toggle {% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data' or request.path|slice:":23" == '/data-management/predected-data' %} dr_active {% endif %}">Data Management</a>
-                <ul class="collapse list-unstyled {% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data' or request.path|slice:":23" == '/data-management/predected-data' %} show {% endif %}" id="dataMngmnt">
+                <a href="#dataMngmnt" data-toggle="collapse" aria-expanded="{% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data/' or request.path|slice:":23" == '/data-management/predected-data/' %} true {% else %} false {% endif %}" 
+                class="dropdown-toggle {% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data/' or request.path|slice:":23" == '/data-management/predected-data/' %} dr_active {% endif %}"><i class="fas fa-database"></i>&nbsp;Data Management</a>
+                <ul class="collapse list-unstyled {% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data/' or request.path|slice:":23" == '/data-management/predected-data/' %} show {% endif %}" id="dataMngmnt">
                     <li class="{% if request.path == '/data-management/raw-data/upload/' %} active {% endif %}">
                         <a class="nav-link" href="{% url 'data-management-upload' %}">Upload Raw Data</a>
                     </li>
@@ -69,7 +69,7 @@
         <ul class="list-unstyled CTAs">
             <li>
                 <a href="#" target="_blank" class="download">
-                    <div class="small">
+                    <div class="small" style="display: flex;justify-content: space-evenly;">
                         <span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
                                 <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>

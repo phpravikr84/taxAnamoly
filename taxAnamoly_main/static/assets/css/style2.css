@@ -30,7 +30,8 @@ p {
 a,
 a:hover,
 a:focus {
-    color: inherit;
+    /* color: inherit; */
+    color: #fff;
     text-decoration: none;
     transition: all 0.3s;
 }
@@ -72,6 +73,27 @@ a:focus {
 }
 
 #sidebar {
+    /* width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 999; */
+    /* background: #232af1; */
+    /* background: #2d353c; */
+    /* background: #f1f3f4; */
+    /* background-image: radial-gradient(circle, #300dc7, #5813cc, #751bd1, #8e24d5, #a52fda, #8d57ed, #7472f9, #5e88ff, #00a8ff, #00c3ff, #00dbff, #03f0fb); */
+    /* background: linear-gradient(to right, #FF4B2B, #FF416C); */
+    /* background: linear-gradient(to left, #B279FF, #7198FD); */
+    /* color: #fff; */
+    /* background-position-x: initial;
+    background-repeat: round;
+    background-image: linear-gradient(0deg, rgb(255 255 255 / 76%), rgb(254 254 254 / 75%)), url(/static/assets/img/6758716_7829.jpg);
+    color: #000;
+    transition: all 0.3s; */
+}
+
+#sidebar {
     width: 250px;
     position: fixed;
     top: 0;
@@ -85,9 +107,10 @@ a:focus {
     /* background: linear-gradient(to right, #FF4B2B, #FF416C); */
     /* background: linear-gradient(to left, #B279FF, #7198FD); */
     /* color: #fff; */
-    background-position-x: initial;
-    background-repeat: round;
-    background-image: linear-gradient(0deg, rgb(255 255 255 / 76%), rgb(254 254 254 / 75%)), url(/static/assets/img/6758716_7829.jpg);
+    background-position-x: right;
+    background-position-y: bottom;
+    background-repeat: no-repeat;
+    background-image: linear-gradient(266deg, rgb(18 0 255 / 18%), rgb(228 158 255)), url(/static/assets/img/login-bg.jpg);
     color: #000;
     transition: all 0.3s;
 }
@@ -110,12 +133,12 @@ a:focus {
 }
 
 #sidebar ul p {
-    color: #000;
-    padding: 10px;
+    color: #fff;
+    padding: 0px;
 }
 
 #sidebar ul li a {
-    padding: 10px;
+    padding: 8px;
     font-size: 0.9em;
     display: block;
     border-top-right-radius: 20px;
@@ -153,14 +176,19 @@ li.sublistparentli.active {
 
 #sidebar ul li.active>a,
 a[aria-expanded="true"] {
-    font-weight: 600;
+    /* font-weight: 600; */
     /* color: #000; */
-    color: #0052cc;
+    /* color: #0052cc; */
+    /* color: #40c1c1; */
     /* background: #156dca; */
     /* background: #FF5637; */
     /* background: #40c1c1; */
     /* background: #ffc617; */
-    background: rgba(0, 102, 255, 0.15);
+    /* background: rgba(0, 102, 255, 0.15); */
+
+    font-weight: 600;
+    color: #000000;
+    background: #ffffff4f;
 }
 
 #sidebar ul li.sublistparentli>a,
@@ -192,9 +220,9 @@ ul ul a {
     /* background: linear-gradient(to left, #B279FF, #7198FD); */
 }
 
-ul.CTAs {
+/* ul.CTAs {
     padding: 20px;
-}
+} */
 
 ul.CTAs a {
     text-align: center;
