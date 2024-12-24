@@ -14,30 +14,30 @@
 				<a class="fload" href="{% url 'dashboard' %}"><i class="fas fa-chart-line"></i>&nbsp; Dashboard</a>
 			</li>
             <li class="">
-                <a href="#dataMngmnt" data-toggle="collapse" aria-expanded="{% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data/' or request.path|slice:":23" == '/data-management/predected-data/' %} true {% else %} false {% endif %}" 
-                class="dropdown-toggle {% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data/' or request.path|slice:":23" == '/data-management/predected-data/' %} dr_active {% endif %}"><i class="fas fa-database"></i>&nbsp;Data Management</a>
-                <ul class="collapse list-unstyled {% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data/' or request.path|slice:":23" == '/data-management/predected-data/' %} show {% endif %}" id="dataMngmnt">
+                <a href="#dataMngmnt" data-toggle="collapse" aria-expanded="{% if request.path == '/data-management/raw-data/' or request.path == '/data-management/raw-data/upload/' or request.path == '/data-management/process-data//' or request.path == '/data-management/predected-data//' %} true {% else %} false {% endif %}" 
+                class="dropdown-toggle {% if request.path == '/data-management/raw-data/' or request.path == '/data-management/raw-data/upload/' or request.path == '/data-management/process-data//' or request.path == '/data-management/predected-data//' %} dr_active {% endif %}"><i class="fas fa-database"></i>&nbsp;Data Management</a>
+                <ul class="collapse list-unstyled {% if request.path == '/data-management/raw-data/' or request.path == '/data-management/raw-data/upload/' or request.path == '/data-management/process-data//' or request.path == '/data-management/predected-data//' %} show {% endif %}" id="dataMngmnt">
                     <li class="{% if request.path == '/data-management/raw-data/upload/' %} active {% endif %}">
                         <a class="nav-link" href="{% url 'data-management-upload' %}">Upload Raw Data</a>
                     </li>
                     <li class="{% if request.path == '/data-management/raw-data/' %} active {% endif %}">
                         <a class="nav-link" href="{% url 'data-management-view' %}">Raw Data Merged Files</a>
                     </li>
-                    <li class="{% if request.path|slice:":23" == '/data-management/process-data/' %} active {% endif %}">
+                    <li class="{% if request.path == '/data-management/process-data/' %} active {% endif %}">
                         <a class="nav-link" href="{% url 'data-management-processed' %}">Processed Data</a>
                     </li>
-                    <li class="{% if request.path|slice:":23" == '/data-managment/predected-data/' %} active {% endif %}">
+                    <li class="{% if request.path == '/data-management/predected-data/' %} active {% endif %}">
                         <a class="nav-link" href="{% url 'data-management-predicted-data' %}">Predicted Data</a>
                     </li>
                 </ul>
             </li>
             <li class="">
-                <a href="#anaLytics" data-toggle="collapse" aria-expanded="{% if request.path|slice:":25" == '/analytics/predicted' or request.path|slice:":23" == '/dashboard/analytics/' %} true {% else %} false {% endif %}" 
-                class="dropdown-toggle {% if request.path|slice:":25" == '/analytics/predicted' or request.path|slice:":23" == '/dashboard/analytics/' %} dr_active {% endif %}">Analytics</a>
-                <ul class="collapse list-unstyled {% if request.path|slice:":25" == '/analytics/predicted' or request.path|slice:":23" == '/dashboard/analytics/' %} show {% endif %}" id="anaLytics">
-                    <li class="{% if request.path == '/analytics/predicted' %} active {% endif %}">
+                <a href="#anaLytics" data-toggle="collapse" aria-expanded="{% if request.path == '/dashboard/analytics/' %} true {% else %} false {% endif %}" 
+                class="dropdown-toggle {% if request.path == '/dashboard/analytics/' %} dr_active {% endif %}">Analytics</a>
+                <ul class="collapse list-unstyled {% if request.path == '/dashboard/analytics/' %} show {% endif %}" id="anaLytics">
+                    {% comment %} <li class="{% if request.path == '/analytics/predicted' %} active {% endif %}">
                         <a class="nav-link" href="#">Predicted Results</a>
-                    </li>
+                    </li> {% endcomment %}
                     <li class="{% if request.path == '/dashboard/analytics/' %} active {% endif %}">
                         <a class="nav-link" href="{% url 'dashboard-analytics' %}">Fraud Analytics Report</a>
                     </li>
