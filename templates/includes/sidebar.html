@@ -39,7 +39,7 @@
                         <a class="nav-link" href="#">Predicted Results</a>
                     </li>
                     <li class="{% if request.path == '/analytics/fraud' %} active {% endif %}">
-                        <a class="nav-link" href="#">Fraud Analytics Report</a>
+                        <a class="nav-link" href="{% url 'dashboard-analytics' %}">Fraud Analytics Report</a>
                     </li>
                 </ul>
             </li>
