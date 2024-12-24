@@ -14,9 +14,9 @@
 				<a class="fload" href="{% url 'dashboard' %}"><i class="fas fa-chart-line"></i>&nbsp; Dashboard</a>
 			</li>
             <li class="">
-                <a href="#dataMngmnt" data-toggle="collapse" aria-expanded="{% if request.path == '/data-management/raw-data/' or request.path == '/data-management/raw-data/upload/' or request.path == '/data-management/process-data//' or request.path == '/data-management/predected-data//' %} true {% else %} false {% endif %}" 
-                class="dropdown-toggle {% if request.path == '/data-management/raw-data/' or request.path == '/data-management/raw-data/upload/' or request.path == '/data-management/process-data//' or request.path == '/data-management/predected-data//' %} dr_active {% endif %}"><i class="fas fa-database"></i>&nbsp;Data Management</a>
-                <ul class="collapse list-unstyled {% if request.path == '/data-management/raw-data/' or request.path == '/data-management/raw-data/upload/' or request.path == '/data-management/process-data//' or request.path == '/data-management/predected-data//' %} show {% endif %}" id="dataMngmnt">
+                <a href="#dataMngmnt" data-toggle="collapse" aria-expanded="{% if request.path == '/data-management/raw-data/' or request.path == '/data-management/raw-data/upload/' or request.path == '/data-management/process-data/' or request.path == '/data-management/predected-data/' %} true {% else %} false {% endif %}" 
+                class="dropdown-toggle {% if request.path == '/data-management/raw-data/' or request.path == '/data-management/raw-data/upload/' or request.path == '/data-management/process-data/' or request.path == '/data-management/predected-data/' %} dr_active {% endif %}"><i class="fas fa-database"></i>&nbsp;Data Management</a>
+                <ul class="collapse list-unstyled {% if request.path == '/data-management/raw-data/' or request.path == '/data-management/raw-data/upload/' or request.path == '/data-management/process-data/' or request.path == '/data-management/predected-data/' %} show {% endif %}" id="dataMngmnt">
                     <li class="{% if request.path == '/data-management/raw-data/upload/' %} active {% endif %}">
                         <a class="nav-link" href="{% url 'data-management-upload' %}">Upload Raw Data</a>
                     </li>
