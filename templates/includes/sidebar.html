@@ -14,19 +14,19 @@
 				<a class="fload" href="{% url 'dashboard' %}"><i class="fas fa-chart-line"></i>&nbsp; Dashboard</a>
 			</li>
             <li class="">
-                <a href="#dataMngmnt" data-toggle="collapse" aria-expanded="{% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data' or request.path|slice:":23" == '/data-management/predected-data' %} true {% else %} false {% endif %}" 
-                class="dropdown-toggle {% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data' or request.path|slice:":23" == '/data-management/predected-data' %} dr_active {% endif %}">Data Management</a>
-                <ul class="collapse list-unstyled {% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data' or request.path|slice:":23" == '/data-management/predected-data' %} show {% endif %}" id="dataMngmnt">
+                <a href="#dataMngmnt" data-toggle="collapse" aria-expanded="{% if request.path == '/data-management/raw-data/' or request.path == '/data-management/raw-data/upload/' or request.path == '/data-management/process-data/' or request.path == '/data-management/predected-data/' %} true {% else %} false {% endif %}" 
+                class="dropdown-toggle {% if request.path == '/data-management/raw-data/' or request.path == '/data-management/raw-data/upload/' or request.path == '/data-management/process-data/' or request.path == '/data-management/predected-data/' %} dr_active {% endif %}">Data Management</a>
+                <ul class="collapse list-unstyled {% if request.path == '/data-management/raw-data/' or request.path == '/data-management/raw-data/upload/' or request.path == '/data-management/process-data/' or request.path == '/data-management/predected-data/' %} show {% endif %}" id="dataMngmnt">
                     <li class="{% if request.path == '/data-management/raw-data/upload/' %} active {% endif %}">
                         <a class="nav-link" href="{% url 'data-management-upload' %}">Upload Raw Data</a>
                     </li>
                     <li class="{% if request.path == '/data-management/raw-data/' %} active {% endif %}">
                         <a class="nav-link" href="{% url 'data-management-view' %}">Raw Data Merged Files</a>
                     </li>
-                    <li class="{% if request.path|slice:":23" == '/data-management/process-data/' %} active {% endif %}">
+                    <li class="{% if request.path == '/data-management/process-data/' %} active {% endif %}">
                         <a class="nav-link" href="{% url 'data-management-processed' %}">Processed Data</a>
                     </li>
-                    <li class="{% if request.path|slice:":23" == '/data-managment/predected-data/' %} active {% endif %}">
+                    <li class="{% if request.path == '/data-management/predected-data/' %} active {% endif %}">
                         <a class="nav-link" href="{% url 'data-management-predicted-data' %}">Predicted Data</a>
                     </li>
                 </ul>
