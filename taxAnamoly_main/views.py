@@ -92,61 +92,68 @@ def dashboard(request):
 
 # Define Raw Data Page
 def rawData(request):
-    # Query FilesMaster with the necessary fields and join with the User model
-    files = FilesMaster.objects.filter(merge_status=True).select_related('User').values(
-        'id',
-        'file_name',
-        'file_path_rw',
-        'created_date',
-        'modified_date',
-        'user_id__first_name',
-        'user_id__last_name'
-    )
+    if request.user.is_authenticated:
+        # Query FilesMaster with the necessary fields and join with the User model
+        files = FilesMaster.objects.filter(merge_status=True).select_related('User').values(
+            'id',
+            'file_name',
+            'file_path_rw',
+            'created_date',
+            'modified_date',
+            'user_id__first_name',
+            'user_id__last_name'
+        )
 
-    records = []
+        records = []
 
-    # Process the query results
-    for file in files:
-        records.append({
-            "id": file['id'],
-            "file_id": file['id'],
-            "file_name": file['file_name'],
-            "file_path": file['file_path_rw'],
-            "uploaded_by": f"{file['user_id__first_name']} {file['user_id__last_name']}",
-            "created_at": file['created_date'].strftime("%Y-%m-%d %H:%M:%S"),
-            "modified_at": file['modified_date'].strftime("%Y-%m-%d %H:%M:%S"),
-        })
+        # Process the query results
+        for file in files:
+            records.append({
+                "id": file['id'],
+                "file_id": file['id'],
+                "file_name": file['file_name'],
+                "file_path": file['file_path_rw'],
+                "uploaded_by": f"{file['user_id__first_name']} {file['user_id__last_name']}",
+                "created_at": file['created_date'].strftime("%Y-%m-%d %H:%M:%S"),
+                "modified_at": file['modified_date'].strftime("%Y-%m-%d %H:%M:%S"),
+            })
 
-    # Render the records in the view template
-    return render(request, 'data-managment/raw-data/index.html', {"records": records})
+        # Render the records in the view template
+        return render(request, 'data-managment/raw-data/index.html', {"records": records})
+    else:
+        return redirect('login')  # Redirect to login page if the user is not logged in
 
 # Define View Raw Data Page
 def viewRawData(request, file_id):
-    # Retrieve the file record
-    file_record = get_object_or_404(FilesMaster, id=file_id)
+    if request.user.is_authenticated:
+        # Retrieve the file record
+        file_record = get_object_or_404(FilesMaster, id=file_id)
 
-    # Read the CSV file and extract data
-    csv_data = []
-    try:
-        with open(file_record.file_path_rw, mode='r') as file:
-            csv_reader = csv.reader(file)
-            headers = next(csv_reader)  # Skip the header
-            for row in csv_reader:
-                csv_data.append(row)
-    except Exception as e:
-        print(f"Error reading CSV file: {e}")
+        # Read the CSV file and extract data
+        csv_data = []
+        try:
+            with open(file_record.file_path_rw, mode='r') as file:
+                csv_reader = csv.reader(file)
+                headers = next(csv_reader)  # Skip the header
+                for row in csv_reader:
+                    csv_data.append(row)
+        except Exception as e:
+            print(f"Error reading CSV file: {e}")
 
-    # Paginate the data
-    paginator = Paginator(csv_data, 10)  # Show 10 rows per page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+        # Paginate the data
+        paginator = Paginator(csv_data, 10)  # Show 10 rows per page
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
 
-    # Render template with paginated data
-    return render(request, 'data-managment/raw-data/view.html', {
-        'page_obj': page_obj,
-        'headers': headers,
-        'file_record': file_record,
-    })
+        # Render template with paginated data
+        return render(request, 'data-managment/raw-data/view.html', {
+            'page_obj': page_obj,
+            'headers': headers,
+            'file_record': file_record,
+        })
+    else:
+        return redirect('login')  # Redirect to login page if the user is not logged in
+    
 # Define Raw Data Upload Page
 #def rawDataUpload(request):
 #    return render(request, 'data-managment/raw-data/upload.html')
@@ -154,74 +161,77 @@ def viewRawData(request, file_id):
 
 @csrf_exempt
 def rawDataUpload(request):
-    """
-    Handle file uploads with AJAX and support multiple file uploads.
-    """
-    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        files = request.FILES.getlist('file')  # Get multiple files from the request
-        financial_filename = request.POST.get('financialfilename', None)  # Provide a default value
+    if request.user.is_authenticated:
+        """
+        Handle file uploads with AJAX and support multiple file uploads.
+        """
+        if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            files = request.FILES.getlist('file')  # Get multiple files from the request
+            financial_filename = request.POST.get('financialfilename', None)  # Provide a default value
 
-        if not financial_filename:
-            print("financialfilename not found:", request.POST)
-            return JsonResponse({'status': 'error', 'message': 'Financial Filename not selected!'})
+            if not financial_filename:
+                print("financialfilename not found:", request.POST)
+                return JsonResponse({'status': 'error', 'message': 'Financial Filename not selected!'})
 
 
-        uploaded_files = []  # List to track successfully uploaded files
-        errors = []  # List to track errors for each file
+            uploaded_files = []  # List to track successfully uploaded files
+            errors = []  # List to track errors for each file
 
-        for uploaded_file in files:
-            file_extension = uploaded_file.name.split('.')[-1].lower()
+            for uploaded_file in files:
+                file_extension = uploaded_file.name.split('.')[-1].lower()
 
-            # Validate file extension
-            if file_extension not in ALLOWED_EXTENSIONS:
-                errors.append(f"Invalid file format: {uploaded_file.name}. Allowed: {', '.join(ALLOWED_EXTENSIONS)}")
-                continue
+                # Validate file extension
+                if file_extension not in ALLOWED_EXTENSIONS:
+                    errors.append(f"Invalid file format: {uploaded_file.name}. Allowed: {', '.join(ALLOWED_EXTENSIONS)}")
+                    continue
 
-            # Generate file name and path
-            file_name = f"{int(time.time())}_{uploaded_file.name}"
-            file_path = os.path.join(MEDIA_DIR, file_name)
-            os.makedirs(MEDIA_DIR, exist_ok=True)
+                # Generate file name and path
+                file_name = f"{int(time.time())}_{uploaded_file.name}"
+                file_path = os.path.join(MEDIA_DIR, file_name)
+                os.makedirs(MEDIA_DIR, exist_ok=True)
 
-            # Determine the user
-            user = request.user if request.user.is_authenticated else None
+                # Determine the user
+                user = request.user if request.user.is_authenticated else None
 
-            try:
-                # Save file to disk
-                with open(file_path, 'wb+') as dest:
-                    for chunk in uploaded_file.chunks():
-                        dest.write(chunk)
+                try:
+                    # Save file to disk
+                    with open(file_path, 'wb+') as dest:
+                        for chunk in uploaded_file.chunks():
+                            dest.write(chunk)
 
-                # Save record in the database
-                file_record = FilesMaster(
-                    file_name=financial_filename,
-                    file_path_rw=file_path,
-                    file_path_pr=None,
-                    file_path_pd=None,
-                    user_id=user,
-                    parent_file_id=None,
-                    status=1,  # Success
-                    reason=None,
-                    file_state=1,  # Raw
-                    created_date=now(),
-                    modified_date=now()
-                )
-                file_record.save()
-                uploaded_files.append({
-                    'id': file_record.id,
-                    'file_path': file_record.file_path_rw
-                })
+                    # Save record in the database
+                    file_record = FilesMaster(
+                        file_name=financial_filename,
+                        file_path_rw=file_path,
+                        file_path_pr=None,
+                        file_path_pd=None,
+                        user_id=user,
+                        parent_file_id=None,
+                        status=1,  # Success
+                        reason=None,
+                        file_state=1,  # Raw
+                        created_date=now(),
+                        modified_date=now()
+                    )
+                    file_record.save()
+                    uploaded_files.append({
+                        'id': file_record.id,
+                        'file_path': file_record.file_path_rw
+                    })
 
-            except Exception as e:
-                errors.append(f"Error saving {uploaded_file.name}: {str(e)}")
+                except Exception as e:
+                    errors.append(f"Error saving {uploaded_file.name}: {str(e)}")
 
-        # Return response
-        if uploaded_files:
-            return JsonResponse({'status': 'success', 'uploaded_files': uploaded_files, 'errors': errors})
+            # Return response
+            if uploaded_files:
+                return JsonResponse({'status': 'success', 'uploaded_files': uploaded_files, 'errors': errors})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'No files uploaded successfully.', 'errors': errors})
         else:
-            return JsonResponse({'status': 'error', 'message': 'No files uploaded successfully.', 'errors': errors})
+            form = CSVUploadForm()
+        return render(request, 'data-managment/raw-data/upload.html', {'form': form, 'financefilenames': FINANCE_FILENAMES})
     else:
-        form = CSVUploadForm()
-    return render(request, 'data-managment/raw-data/upload.html', {'form': form, 'financefilenames': FINANCE_FILENAMES})
+        return redirect('login')  # Redirect to login page if the user is not logged in
 
 @csrf_exempt
 def deleteUploadedFile(request):
@@ -405,34 +415,36 @@ def display_results(request):
 
 # Define Process Data Page
 def processData(request):
-    # Query FilesMaster with the necessary fields and join with the User model
-    files = FilesMaster.objects.filter(file_state=5, merge_status=True).select_related('User').values(
-        'id',
-        'file_name',
-        'file_path_rw',
-        'created_date',
-        'modified_date',
-        'user_id__first_name',
-        'user_id__last_name'
-    )
+    if request.user.is_authenticated:
+        # Query FilesMaster with the necessary fields and join with the User model
+        files = FilesMaster.objects.filter(file_state=5, merge_status=True).select_related('User').values(
+            'id',
+            'file_name',
+            'file_path_rw',
+            'created_date',
+            'modified_date',
+            'user_id__first_name',
+            'user_id__last_name'
+        )
 
-    records = []
+        records = []
 
-    # Process the query results
-    for file in files:
-        records.append({
-            "id": file['id'],
-            "file_id": file['id'],
-            "file_name": file['file_name'],
-            "file_path": file['file_path_rw'],
-            "uploaded_by": f"{file['user_id__first_name']} {file['user_id__last_name']}",
-            "created_at": file['created_date'].strftime("%Y-%m-%d %H:%M:%S"),
-            "modified_at": file['modified_date'].strftime("%Y-%m-%d %H:%M:%S"),
-        })
+        # Process the query results
+        for file in files:
+            records.append({
+                "id": file['id'],
+                "file_id": file['id'],
+                "file_name": file['file_name'],
+                "file_path": file['file_path_rw'],
+                "uploaded_by": f"{file['user_id__first_name']} {file['user_id__last_name']}",
+                "created_at": file['created_date'].strftime("%Y-%m-%d %H:%M:%S"),
+                "modified_at": file['modified_date'].strftime("%Y-%m-%d %H:%M:%S"),
+            })
 
-    # Render the records in the view template
-    return render(request, 'data-managment/processed-data/index.html', {"records": records})
-
+        # Render the records in the view template
+        return render(request, 'data-managment/processed-data/index.html', {"records": records})
+    else:
+        return redirect('login')  # Redirect to login page if the user is not logged in
 
 @csrf_exempt
 def ProcessRawFiles(request):
@@ -790,33 +802,36 @@ def addPredictedDataDetail(file_path, file_id):
 
 # Define Raw Data Page
 def viewPredictedData(request):
-    # Query FilesMaster with the necessary fields and join with the User model
-    files = FilesMaster.objects.filter(file_state=3, merge_status=True).select_related('User').values(
-        'id',
-        'file_name',
-        'file_path_pd',
-        'created_date',
-        'modified_date',
-        'user_id__first_name',
-        'user_id__last_name'
-    )
+    if request.user.is_authenticated:
+        # Query FilesMaster with the necessary fields and join with the User model
+        files = FilesMaster.objects.filter(file_state=3, merge_status=True).select_related('User').values(
+            'id',
+            'file_name',
+            'file_path_pd',
+            'created_date',
+            'modified_date',
+            'user_id__first_name',
+            'user_id__last_name'
+        )
 
-    records = []
+        records = []
 
-    # Process the query results
-    for file in files:
-        records.append({
-            "id": file['id'],
-            "file_id": file['id'],
-            "file_name": file['file_name'],
-            "file_path": file['file_path_pd'],
-            "uploaded_by": f"{file['user_id__first_name']} {file['user_id__last_name']}",
-            "created_at": file['created_date'].strftime("%Y-%m-%d %H:%M:%S"),
-            "modified_at": file['modified_date'].strftime("%Y-%m-%d %H:%M:%S"),
-        })
+        # Process the query results
+        for file in files:
+            records.append({
+                "id": file['id'],
+                "file_id": file['id'],
+                "file_name": file['file_name'],
+                "file_path": file['file_path_pd'],
+                "uploaded_by": f"{file['user_id__first_name']} {file['user_id__last_name']}",
+                "created_at": file['created_date'].strftime("%Y-%m-%d %H:%M:%S"),
+                "modified_at": file['modified_date'].strftime("%Y-%m-%d %H:%M:%S"),
+            })
 
-    # Render the records in the view template
-    return render(request, 'data-managment/processed-data/view.html', {"records": records})
+        # Render the records in the view template
+        return render(request, 'data-managment/processed-data/view.html', {"records": records})
+    else:
+        return redirect('login')  # Redirect to login page if the user is not logged in
 
 # def viewPredictedDataDetail(request, file_id):
 #      # Retrieve the file record
@@ -847,22 +862,25 @@ def viewPredictedData(request):
 
 
 def viewPredictedDataDetail(request, file_id):
-    # Retrieve the file record
-    file_record = get_object_or_404(FilesMaster, id=file_id)
+    if request.user.is_authenticated:
+        # Retrieve the file record
+        file_record = get_object_or_404(FilesMaster, id=file_id)
 
-    # Retrieve the predictions for the specific file_id
-    predictions = Prediction.objects.filter(file_id=file_id)
+        # Retrieve the predictions for the specific file_id
+        predictions = Prediction.objects.filter(file_id=file_id)
 
-    # Paginate the data
-    paginator = Paginator(predictions, 10)  # Show 10 rows per page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+        # Paginate the data
+        paginator = Paginator(predictions, 10)  # Show 10 rows per page
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
 
-    # Render template with paginated data
-    return render(request, 'data-managment/processed-data/view-data.html', {
-        'page_obj': page_obj,
-        'file_record': file_record,
-    })
+        # Render template with paginated data
+        return render(request, 'data-managment/processed-data/view-data.html', {
+            'page_obj': page_obj,
+            'file_record': file_record,
+        })
+    else:
+        return redirect('login')  # Redirect to login page if the user is not logged in
     
 # Define View Process Data Page
 def viewProcessData(request):
@@ -901,68 +919,71 @@ def downloadPredictedFile(request, file_id):
         raise Http404("File not found.")
     
 def viewFraudAnalyticsData(request):
-    # Get unique taxpayer names (company names)
-    taxpayer_names = Prediction.objects.values_list('taxpayer_name', flat=True).distinct()
+    if request.user.is_authenticated:
+        # Get unique taxpayer names (company names)
+        taxpayer_names = Prediction.objects.values_list('taxpayer_name', flat=True).distinct()
 
-    # Get minimum and maximum tax period year
-    min_year = Prediction.objects.aggregate(Min('tax_period_year'))['tax_period_year__min']
-    max_year = Prediction.objects.aggregate(Max('tax_period_year'))['tax_period_year__max']
+        # Get minimum and maximum tax period year
+        min_year = Prediction.objects.aggregate(Min('tax_period_year'))['tax_period_year__min']
+        max_year = Prediction.objects.aggregate(Max('tax_period_year'))['tax_period_year__max']
 
-    # Create a list of years from min_year to max_year
-    years_range = list(range(min_year, max_year + 1))
+        # Create a list of years from min_year to max_year
+        years_range = list(range(min_year, max_year + 1))
 
-    # Get filters from request (default to max_year and all fraud values)
-    tax_period_year = request.GET.get('tax_period_year', max_year)
-    fraud_prediction = request.GET.get('fraud_prediction')  # Can be None, '1', or '0'
+        # Get filters from request (default to max_year and all fraud values)
+        tax_period_year = request.GET.get('tax_period_year', max_year)
+        fraud_prediction = request.GET.get('fraud_prediction')  # Can be None, '1', or '0'
 
-    # Filter predictions based on year and fraud prediction (if provided)
-    predictions = Prediction.objects.filter(tax_period_year=tax_period_year)
-    if fraud_prediction in ['0', '1']:
-        predictions = predictions.filter(fraud_prediction=int(fraud_prediction))
+        # Filter predictions based on year and fraud prediction (if provided)
+        predictions = Prediction.objects.filter(tax_period_year=tax_period_year)
+        if fraud_prediction in ['0', '1']:
+            predictions = predictions.filter(fraud_prediction=int(fraud_prediction))
 
-    # Generate the map (only once) and center it based on the first prediction with valid data
-    if predictions.exists():
-        first_prediction = predictions.first()
-        map_object = folium.Map(location=[first_prediction.latitude, first_prediction.longitude], zoom_start=6)
+        # Generate the map (only once) and center it based on the first prediction with valid data
+        if predictions.exists():
+            first_prediction = predictions.first()
+            map_object = folium.Map(location=[first_prediction.latitude, first_prediction.longitude], zoom_start=6)
+        else:
+            # If no predictions exist, create a default map center
+            map_object = folium.Map(location=[48.0, 5.0], zoom_start=6)  # Default location
+
+        # Create a list of locations and intensities for the HeatMap
+        heat_data = []
+        for prediction in predictions:
+            if prediction.fraud_prediction == 1:
+                latitude = float(prediction.latitude)
+                longitude = float(prediction.longitude)
+
+                if latitude and longitude:
+                    print(f"Adding to heatmap: Latitude: {latitude}, Longitude: {longitude}")
+                    heat_data.append([latitude, longitude, 1])  # Add intensity for fraud locations
+
+                    # For debugging: Add markers for each fraud location
+                    folium.CircleMarker([latitude, longitude], radius=5, color='red', fill=True).add_to(map_object)
+
+        # Add HeatMap to the map if heat_data is not empty
+        if heat_data:
+            HeatMap(heat_data, radius=25, max_zoom=15).add_to(map_object)
+            print("HeatMap added to map.")
+        else:
+            print("No fraud data found for heatmap")
+
+        # Render the map as HTML
+        map_html = map_object._repr_html_()
+
+        # Prepare data for rendering
+        return render(request, 'dashboard/analytics/index.html', {
+            'taxpayer_names': taxpayer_names,
+            'min_year': min_year,
+            'max_year': max_year,
+            'years_range': years_range,
+            'fraud_values': [0, 1],  # Fraud can either be 0 or 1
+            'predictions': predictions,
+            'default_tax_period_year': tax_period_year,
+            'map_html': map_html,  # Pass the generated map HTML
+        })
     else:
-        # If no predictions exist, create a default map center
-        map_object = folium.Map(location=[48.0, 5.0], zoom_start=6)  # Default location
-
-    # Create a list of locations and intensities for the HeatMap
-    heat_data = []
-    for prediction in predictions:
-        if prediction.fraud_prediction == 1:
-            latitude = float(prediction.latitude)
-            longitude = float(prediction.longitude)
-
-            if latitude and longitude:
-                print(f"Adding to heatmap: Latitude: {latitude}, Longitude: {longitude}")
-                heat_data.append([latitude, longitude, 1])  # Add intensity for fraud locations
-
-                # For debugging: Add markers for each fraud location
-                folium.CircleMarker([latitude, longitude], radius=5, color='red', fill=True).add_to(map_object)
-
-    # Add HeatMap to the map if heat_data is not empty
-    if heat_data:
-        HeatMap(heat_data, radius=25, max_zoom=15).add_to(map_object)
-        print("HeatMap added to map.")
-    else:
-        print("No fraud data found for heatmap")
-
-    # Render the map as HTML
-    map_html = map_object._repr_html_()
-
-    # Prepare data for rendering
-    return render(request, 'dashboard/analytics/index.html', {
-        'taxpayer_names': taxpayer_names,
-        'min_year': min_year,
-        'max_year': max_year,
-        'years_range': years_range,
-        'fraud_values': [0, 1],  # Fraud can either be 0 or 1
-        'predictions': predictions,
-        'default_tax_period_year': tax_period_year,
-        'map_html': map_html,  # Pass the generated map HTML
-    })
+        return redirect('login')  # Redirect to login page if the user is not logged in
 
     
 def get_geojson(request):
@@ -1016,15 +1037,38 @@ def dataColumnSettingEdit(request, id):
     return render(request, 'settings/datacolumn-setting/edit.html', {'form': form})
 #Company Management
 def companySetting(request):
-    return render(request, 'settings/company/index.html')
+    if request.user.is_authenticated:
+        return render(request, 'settings/company/index.html')
+    else:
+        return redirect('login')  # Redirect to login page if the user is not logged in
+    
 def companySettingAdd(request):
-    return render(request, 'settings/company/add.html')
+    if request.user.is_authenticated:
+        return render(request, 'settings/company/add.html')
+    else:
+        return redirect('login')  # Redirect to login page if the user is not logged in
+    
 def companySettingEdit(request):
-    return render(request, 'settings/company/edit.html')
+    if request.user.is_authenticated:
+        return render(request, 'settings/company/edit.html')
+    else:
+        return redirect('login')  # Redirect to login page if the user is not logged in
+    
 #Pickel Managment
 def pickelModelSetting(request):
-    return render(request, 'settings/pickel-model/index.html')
+    if request.user.is_authenticated:
+        return render(request, 'settings/pickel-model/index.html')
+    else:
+        return redirect('login')  # Redirect to login page if the user is not logged in
+    
 def pickelModelSettingAdd(request):
-    return render(request, 'settings/pickel-model/add.html')
+    if request.user.is_authenticated:
+        return render(request, 'settings/pickel-model/add.html')
+    else:
+        return redirect('login')  # Redirect to login page if the user is not logged in
+    
 def pickelModelSettingEdit(request):
-    return render(request, 'settings/pickel-model/edit.html')
+    if request.user.is_authenticated:
+        return render(request, 'settings/pickel-model/edit.html')
+    else:
+        return redirect('login')  # Redirect to login page if the user is not logged in
