@@ -1,0 +1,84 @@
+{% load static %}
+    <nav id="sidebar">
+        <div class="sidebar-header text-center">
+            <img src="{% static 'assets/img/logo.png' %}" class="img-fluid" style="width: 55%;"/>
+            <h3 style="font-size: 1rem !important; font-weight: 600  !important; margin-top: 10px;">Tax Anomaly</h3>
+            <h4 style="font-size: 1rem !important; font-weight: 400  !important; margin-top: 10px;">Sub Heading</h4>
+        </div>
+
+        <ul class="list-unstyled components">
+            <p class="text-center font-weight-bold">
+                IT ADMIN Portal
+            </p>
+			<li class="{% if request.path == '/dashboard/' %} active {% endif %}">
+				<a class="fload" href="{% url 'dashboard' %}"><i class="fas fa-chart-line"></i>&nbsp; Dashboard</a>
+			</li>
+            <li class="">
+                <a href="#dataMngmnt" data-toggle="collapse" aria-expanded="{% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data' or request.path|slice:":23" == '/data-management/predected-data' %} true {% else %} false {% endif %}" 
+                class="dropdown-toggle {% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data' or request.path|slice:":23" == '/data-management/predected-data' %} dr_active {% endif %}">Data Management</a>
+                <ul class="collapse list-unstyled {% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/raw-data/upload' or request.path|slice:":23" == '/data-management/process-data' or request.path|slice:":23" == '/data-management/predected-data' %} show {% endif %}" id="dataMngmnt">
+                    <li class="{% if request.path == '/data-management/raw-data/upload/' %} active {% endif %}">
+                        <a class="nav-link" href="{% url 'data-management-upload' %}">Upload Raw Data</a>
+                    </li>
+                    <li class="{% if request.path == '/data-management/raw-data/' %} active {% endif %}">
+                        <a class="nav-link" href="{% url 'data-management-view' %}">Raw Data Merged Files</a>
+                    </li>
+                    <li class="{% if request.path|slice:":23" == '/data-management/process-data/' %} active {% endif %}">
+                        <a class="nav-link" href="{% url 'data-management-processed' %}">Processed Data</a>
+                    </li>
+                    <li class="{% if request.path|slice:":23" == '/data-managment/predected-data/' %} active {% endif %}">
+                        <a class="nav-link" href="{% url 'data-management-predicted-data' %}">Predicted Data</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="">
+                <a href="#anaLytics" data-toggle="collapse" aria-expanded="{% if request.path|slice:":25" == '/analytics/predicted' or request.path|slice:":23" == '/analytics/fraud' %} true {% else %} false {% endif %}" 
+                class="dropdown-toggle {% if request.path|slice:":25" == '/analytics/predicted' or request.path|slice:":23" == '/analytics/fraud' %} dr_active {% endif %}">Analytics</a>
+                <ul class="collapse list-unstyled {% if request.path|slice:":25" == '/analytics/predicted' or request.path|slice:":23" == '/analytics/fraud' %} show {% endif %}" id="anaLytics">
+                    <li class="{% if request.path == '/analytics/predicted' %} active {% endif %}">
+                        <a class="nav-link" href="#">Predicted Results</a>
+                    </li>
+                    <li class="{% if request.path == '/analytics/fraud' %} active {% endif %}">
+                        <a class="nav-link" href="#">Fraud Analytics Report</a>
+                    </li>
+                </ul>
+            </li>
+			<li class="{% if request.path == 'settings/company/' %} active {% endif %}">
+				<a class="fload" href="{% url 'company-setting' %}">
+                    <i class="fas fa-chart-area"></i>&nbsp; Company Setting
+                </a>
+			</li>
+			<li class="{% if request.path == 'settings/datacolumn-setting/' %} active {% endif %}">
+				<a class="fload" href="{% url 'data-column-setting' %}">
+                    <i class="fas fa-chart-area"></i>&nbsp; Data Column Settings
+                </a>
+			</li>
+			<li class="">
+				<a class="fload" href="#">
+                    <i class="fas fa-chart-area"></i>&nbsp; API Management
+                </a>
+			</li>
+			<li class="{% if request.path == 'settings/pickel-model/' %} active {% endif %}">
+				<a class="fload" href="{% url 'pickel-model-setting' %}">
+                    <i class="fas fa-chart-area"></i>&nbsp; Pickel Model Setting
+                </a>
+			</li>
+        </ul>
+        
+
+        <ul class="list-unstyled CTAs">
+            <li>
+                <a href="#" target="_blank" class="download">
+                    <div class="small">
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+                                <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+                                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+                            </svg>
+                        </span>
+                        <div id="MyClockDisplay" class="clock" onload="showTime()"></div>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </nav>

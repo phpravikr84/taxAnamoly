@@ -1,0 +1,276 @@
+/* {
+    box-sizing: border-box;
+    font-family: 'Lato', sans-serif;
+} */
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    /* display:flex; */
+    justify-content: center;
+    align-items: center;
+    /* background: linear-gradient(to bottom, rgba(162, 11, 192, 0.795), rgb(6, 27, 51)); */
+    background: linear-gradient(to bottom, rgb(82 239 255 / 80%), rgb(6, 27, 51));
+    overflow-x: hidden;
+    margin-left: 0;
+    margin-top: 0;
+}
+
+.top-nav {
+    width: 100%;
+    height: 65px;
+    background: linear-gradient(to right, rgba(5, 5, 5, 0.911), rgb(91 163 12 / 75%));
+    padding: 4px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-nav .left {
+    display: flex;
+    align-items: center;
+}
+
+.top-nav.left .logo p {
+    font-size: 50px;
+    font-weight: bold;
+    color: #eeeaea;
+    margin-right: 25px;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Wet+Paint&display=swap');
+.top-nav.left.logo h1 {
+    font-family: 'Rubik Wet Paint', cursive;
+}
+
+.top-nav .left .logo h1 span {
+    color: #37a000;
+    font-family: 'Beau Rivage', cursive;
+}
+
+.top-nav.right ul {
+    display: flex;
+    list-style: none;
+}
+
+.top-nav .right ul li a {
+    display: flex;
+    padding: 8px 20px;
+    font-family: 'Beau Rivage', cursive;
+    color: #ebe5e5;
+}
+
+.wrapper {
+    /* display: -webkit-box;
+    width: 70%;
+    justify-content: space-around;
+    margin-top: 100px;
+    margin-left: 20px; */
+    display: flex;
+    /* width: 70%; */
+    justify-content: space-around;
+    margin-top: 100px;
+    margin-left: 20px;
+}
+
+.card {
+    width: 280px;
+    height: 300px;
+    margin: 10px;
+    padding: 2rem 1rem;
+    background-color: #fff;
+    position: relative;
+    display: flex;
+    align-items: center;
+    box-shadow: 0px 7px 10px rgba(0, 0, 0, 0.5);
+    transition: 0.5s ease-in-out
+}
+
+.card:hover {
+    transform: translateY(20px);
+}
+
+.card:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0, 176, 155, 0.356), rgba(146, 189, 72, 0.712));
+    z-index: 12;
+    transition: 00.5s all;
+    opacity: 0;
+}
+
+.card:hover:before {
+    opacity: 1;
+}
+
+.card img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.card .info {
+    position: relative;
+    z-index: 999;
+    color: #fff;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: 0.5s all;
+    cursor: pointer;
+}
+
+.card:hover .info {
+    opacity: 1;
+    transform: translateY(0px);
+}
+
+.card .info h1 {
+    margin: 0;
+    color: rgb(136, 9, 9)
+}
+
+.card .info p {
+    letter-spacing: 1px;
+    color: black;
+    font-weight: bold;
+    font-size: 15px;
+    margin-top: 8px;
+    margin-bottom: 20px;
+}
+
+.card .info .btn {
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(to bottom, rgba(223, 114, 13, 0.589), rgb(240, 236, 14));
+    color: #000;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.4s ease-in-out;
+}
+
+.card .info.btn:hover {
+    box-shadow: 0px 7px 10px rgba(0, 0, 0, 0.5);
+}
+
+.footer {
+    width: 100%;
+    height: 20px;
+    background: black;
+    padding: 25px 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100px;
+    margin-bottom: auto;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+}
+
+.footer .left-foot {
+    display: flex;
+    align-items: center;
+    color: #eeeaea;
+}
+
+.footer .left-foot p {
+    display: flex;
+    align-items: center;
+    color: #eeeaea;
+    font-size: 20px;
+}
+
+.footer .left-foot a {
+    text-decoration: none;
+}
+
+.footer .left-foot p span {
+    float: center;
+    color: #37a000;
+    font-size: 20px;
+}
+
+
+/* The Modal (background) */
+
+.modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+
+/* Modal Content */
+
+.modal-content {
+    /* background-color: #fefefe; */
+    background-color: linear-gradient(to bottom, rgba(223, 114, 13, 0.589), rgb(240, 236, 14));
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%;
+}
+
+.modal-content img {
+    width: -webkit-fill-available;
+}
+
+.modal-content p {
+    font-weight: bold;
+    font-family: cursive;
+}
+
+
+/* The Close Button */
+
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.admin_signin {
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(to bottom, rgba(223, 114, 13, 0.589), rgb(240, 236, 14));
+    color: #000;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.4s ease-in-out;
+}

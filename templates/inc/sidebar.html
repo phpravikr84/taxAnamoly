@@ -5,7 +5,7 @@
                 <div class="sb-sidenav-menu-heading">Main</div>
                 <a class="nav-link {% if request.path == '/dashboard/' %} active {% endif %}" href="{% url 'dashboard' %}">
                     <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                    Dashboard
+                    Dashboard 
                 </a>
                 
                 <a class="nav-link collapsed {% if request.path|slice:":25" == '/data-management/raw-data' or request.path|slice:":23" == '/data-management/process-data' %} active {% endif %}" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">

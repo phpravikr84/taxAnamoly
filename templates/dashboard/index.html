@@ -7,7 +7,7 @@
     </ol>
 
     {% if messages %}
-        <div 
+        <!-- <div 
             class="messages px-4 flash-screen mb-2 
             {% if messages.0.tags == 'success' %}bg-success 
             {% elif messages.0.tags == 'danger' %}bg-danger 
@@ -21,19 +21,32 @@
                 <button type="button" class="btn-close crossbtn" data-bs-dismiss="alert" aria-label="Close"></button>
             </span>
             {% endfor %}
+        </div> -->
+        {% for message in messages %}
+        <div  class="alert 
+        {% if messages.0.tags == 'success' %}alert-success 
+        {% elif messages.0.tags == 'danger' %}alert-danger 
+        {% else %}alert-success 
+        {% endif %}
+        alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
+        {% endfor %}
     {% endif %}
         
     <!-- Tabs Section -->
     <ul class="nav nav-tabs mb-4" id="dashboard-tabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="sales-tab" data-bs-toggle="tab" data-bs-target="#sales-content" type="button" role="tab">Sales</button>
+            <button class="nav-link active" id="sales-tab" data-toggle="tab" data-target="#sales-content" type="button" role="tab" aria-controls="sales-content" aria-selected="true">Sales</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="revenue-tab" data-bs-toggle="tab" data-bs-target="#revenue-content" type="button" role="tab">Revenue</button>
+            <button class="nav-link" id="revenue-tab" data-toggle="tab" data-target="#revenue-content" type="button" role="tab" aria-controls="revenue-content" aria-selected="true">Revenue</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#expenses-content" type="button" role="tab">Expenses</button>
+            <button class="nav-link" id="expenses-tab" data-toggle="tab" data-target="#expenses-content" type="button" role="tab" aria-controls="expenses-content" aria-selected="true">Expenses</button>
         </li>
     </ul>
 
@@ -327,7 +340,7 @@
 }
 
 </style>
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> -->
 <script>
     // Sales Chart
      // Sales Chart as a Column Chart

@@ -13,9 +13,9 @@
         <div class="card-body">
             <div class="row d-flex justify-content-center">
                 <div class="col-md-7">
-                      <h1>Upload Raw Files</h1>
+                      <h4 class="mb-4">Upload Raw Files</h4>
                         {% if messages %}
-                            <div 
+                            <!-- <div 
                                 class="messages px-4 flash-screen 
                                 {% if messages.0.tags == 'SUCCESS' %}bg-success 
                                 {% elif messages.0.tags == 'ERROR' %}bg-danger 
@@ -29,17 +29,31 @@
                                     <button type="button" class="btn-close crossbtn" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </span>
                                 {% endfor %}
+                            </div> -->
+                            {% for message in messages %}
+                            <div  class="alert 
+                            {% if messages.0.tags == 'success' %}alert-success 
+                            {% elif messages.0.tags == 'danger' %}alert-danger 
+                            {% else %}alert-success 
+                            {% endif %}
+                            alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
+                            {% endfor %}
                         {% endif %}
 
                         <form id="upload-form" action="{% url 'data-management-upload' %}"  enctype="multipart/form-data" class="d-flex align-items-center gap-3">
                             {% csrf_token %}
-                            <select id="financial-filename" class="form-select w-25" name="financialfilename">
+                            <select id="financial-filename" class="form-control form-select w-25" name="financialfilename">
                                 <option value="">Select Financial Filename</option>
                                 {% for key, value in financefilenames.items %}
                                     <option value="{{ key }}">{{ value }}</option>
                                 {% endfor %}
                             </select>
+                            &nbsp;
                             <input id="file-input" type="file" name="file" multiple>
                             <button class="btn btn-primary" type="button" id="upload-button">Upload</button>
                         </form>

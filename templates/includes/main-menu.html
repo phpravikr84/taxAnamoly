@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<div class="container-fluid">
+
+    <button type="button" id="sidebarCollapse" class="btn btn-warning">
+        <i class="fas fa-align-left"></i>
+        <span></span>
+    </button>
+    <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-align-justify"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <span style="font-weight: bold;">&nbsp; WELCOME USER</span>
+        <ul class="nav navbar-nav ml-auto">
+			<!-- <li class="nav-item active">
+				<a class="nav-link" href="#"><i class="fas fa-chart-line"></i>&nbsp;Dashboard</a>
+			</li> -->
+            <li class="nav-item dropdown active">
+                <a class="nav-link dropdown-toggle userSettingDropdownToggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user-cog"></i>
+                </a>
+                <div class="dropdown-menu userSettingDropdownMenu">
+                    <a class="dropdown-item " href="#"><i class="fas fa-user-circle"></i>&nbsp;My Profile</a>
+                    <a class="dropdown-item " href="#"><i class="fas fa-cogs"></i>&nbsp;Settings</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp;Log Out</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+</nav>

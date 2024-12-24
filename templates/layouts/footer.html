@@ -1,0 +1,200 @@
+</div>
+    </div>
+{% include '../includes/url_to_js.html' %}
+<script type="text/javascript">
+    const enterEventListner = (onEle, triggerEle) => {
+        onEle.on('keypress', function(e) {
+            if (e.which == 13) {
+                triggerEle.click();
+            }
+        });
+    }
+    // enterEventListner ($('.currency_input'), $('#currency_action_btn_div').find('button'));
+    $(document).ready(function () {
+        $('#example').DataTable();
+        $('.data-table').DataTable();
+        //document ready functions
+        $("#sidebar").mCustomScrollbar({
+            theme: "minimal"
+        });
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar, #content').toggleClass('active');
+            $('.collapse.in').toggleClass('in');
+            $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+        });
+        $("#fpage_loader").hide();
+        $('.fload').on('click', ()=>{
+          $("#fpage_loader").show();
+        });
+        // clog("Console message Active");
+    });
+    var colors = ["#15a934", "#e82700"];
+    var options = {
+          series: [{
+          data: [44, 55, 41, 64, 22, 43, 21]
+        }, {
+          data: [53, 32, 33, 52, 13, 44, 32]
+        }],
+          chart: {
+          type: 'bar',
+          height: 430
+        },
+        plotOptions: {
+          bar: {
+            horizontal: true,
+            dataLabels: {
+              position: 'top',
+            },
+          }
+        },
+        dataLabels: {
+          enabled: true,
+          offsetX: -6,
+          style: {
+            fontSize: '12px',
+            colors: ['#fff']
+          }
+        },
+        stroke: {
+          show: true,
+          width: 1,
+          colors: ['#fff']
+        },
+        tooltip: {
+          shared: true,
+          intersect: false
+        },
+        xaxis: {
+          categories: [2001, 2002, 2003, 2004, 2005, 2006, 2007],
+        },
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+        var options2 = {
+          series: [{
+          name: 'Net Profit',
+          data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
+        }, {
+          name: 'Revenue',
+          data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
+        }, {
+          name: 'Free Cash Flow',
+          data: [35, 41, 36, 26, 45, 48, 52, 53, 41]
+        }],
+          chart: {
+          type: 'bar',
+          height: 350
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%',
+            borderRadius: 5,
+            borderRadiusApplication: 'end'
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+        },
+        yaxis: {
+          title: {
+            text: '$ (thousands)'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return "$ " + val + " thousands"
+            }
+          }
+        }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart2"), options2);
+        chart.render();
+        var options4 = {
+          series: [44, 55, 13, 43, 22],
+          chart: {
+          width: 380,
+          type: 'pie',
+        },
+        labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }]
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart4"), options4);
+        chart.render();
+        var options3 = {
+          series: [{
+          data: [21, 22, 10, 28, 16, 21, 13, 30]
+        }],
+          chart: {
+          height: 350,
+          type: 'bar',
+          events: {
+            click: function(chart, w, e) {
+              // console.log(chart, w, e)
+            }
+          }
+        },
+        colors: colors,
+        plotOptions: {
+          bar: {
+            columnWidth: '45%',
+            distributed: true,
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        legend: {
+          show: false
+        },
+        xaxis: {
+          categories: [
+            ['John', 'Doe'],
+            ['Joe', 'Smith'],
+            ['Jake', 'Williams'],
+            'Amber',
+            ['Peter', 'Brown'],
+            ['Mary', 'Evans'],
+            ['David', 'Wilson'],
+            ['Lily', 'Roberts'], 
+          ],
+          labels: {
+            style: {
+              colors: colors,
+              fontSize: '12px'
+            }
+          }
+        }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart3"), options3);
+        chart.render();
+</script>
+{% block script %}{% endblock %}
+  </body>
+</html>

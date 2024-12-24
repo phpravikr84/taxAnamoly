@@ -1,0 +1,62 @@
+/**======================
+Login
+**/
+.card-custom {
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    display: flex;
+    width: 80%;
+    margin: auto;
+}
+.bg-primary-dark {
+    background: linear-gradient(45deg, #6F42C1, #007BFF);
+    color: white;
+}
+.login-icon {
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    border-radius: 50%;
+    background: white;
+    color: #6F42C1;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+.welcome-section {
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Vertically center content */
+    align-items: center;    /* Horizontally center content */
+    height: auto;           /* Ensure the column takes the full height */
+}
+.welcome-section img {
+    max-width: 200px;
+    margin-bottom: 1rem;
+}
+.welcome-section h2 {
+    margin-bottom: 1rem;
+}
+
+/**Common CSS **/
+button.btn-close.crossbtn {
+    font-size: 0.7rem;
+}
+.flash-screen {
+    opacity: 0; /* Initially hidden */
+    transition: opacity 1s ease; /* Smooth transition effect */
+}
+
+.flash-screen.fade-in {
+    opacity: 1; /* Fully visible on fade-in */
+}
+
+.flash-screen.fade-out {
+    opacity: 0; /* Invisible on fade-out */
+}
