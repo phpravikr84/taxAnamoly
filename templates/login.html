@@ -35,8 +35,10 @@
                Log in to explore your dashboard and get started.
             </p>
         </div> -->
-		<div class="container-login100" style="background-image: url({% static 'assets/img/login-bg.jpg' %}); background-size: cover; transform: rotate(180deg);">
-			<div class="wrap-login100" style="background-image: url({% static 'assets/img/login-bg.jpg' %}); background-size: cover; box-shadow: 10px 9px 12px; transform: rotate(180deg);">
+		<!-- <div class="container-login100" style="background-image: url({% static 'assets/img/login-bg.jpg' %}); background-size: cover; transform: rotate(180deg);"> -->
+		<div class="container-login100" style="background-image: url({% static 'assets/img/login-bg.jpg' %}); background-size: cover; background-position-y: center;">
+			<!-- <div class="wrap-login100" style="background-image: url({% static 'assets/img/login-bg.jpg' %}); background-size: cover; box-shadow: 10px 9px 12px; transform: rotate(180deg);"> -->
+			<div class="wrap-login100">
 				<form class="login100-form validate-form" action="{% url 'login' %}" method="POST">
                     {% csrf_token %}
 					<span class="login100-form-title">
