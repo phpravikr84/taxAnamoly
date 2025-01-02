@@ -11,21 +11,12 @@
             Pickel Model - Add
         </div>
         <div class="card-body">
-            <form method="post" action="">
+            <form method="post" action="{% url 'pickel-model-setting-add' %}"  enctype="multipart/form-data" class="d-flex align-items-center gap-3">
                 {% csrf_token %}
-                <div class="row">
-                    <div class="col-md-4 mb-4">
-                        <label for="pickel-filename">Pickel File Name</label>
-                        <input type="text" class="form-control" id="pickel_file_name" placeholder="Pickel File Name">
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <label for="pickel_file_path">Pickel File Path</label>
-                        <input type="file" class="form-control" id="pickel_file_path" placeholder="Pickel File Path">
-                    </div>
-                    <div class="cold-md-12 form-check mb-4">
-                        <button type="button" class="btn btn-warning" id="merge-btn">Submit Data Column</button>
-                    </div>
-                </div>
+                <input id="file_name" type="file" name="file_name" multiple>
+                <button type="submit" class="btn btn-success">Upload Pickel Model</button>
+                {% comment %} <a href="{% url 'pickel-model-list' %}" class="btn btn-secondary">Cancel</a> {% endcomment %}
+            </form>
             </form>
         </div>
     </div>
