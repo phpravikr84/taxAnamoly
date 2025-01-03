@@ -35,11 +35,14 @@ import random
 from django.db.models import Max, Min
 import folium
 from folium.plugins import HeatMap
+from pickelmodelsetting.models import PickelModelSetting
+from .forms import PickelModelSettingForm
 
 MEDIA_DIR = 'media/csv/'
 MEDIA_DIR_MERGE = 'media/csv/merge/'
 PROCESS_DIRS = 'media/csv/processed/'
 PREDICTED_DIRS = 'media/csv/predict/'
+MEDIA_DIR_PICKEL = 'media/pickel_models/'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_DIR = os.path.join(BASE_DIR, 'static', 'model')
 ALLOWED_EXTENSIONS = ['csv', 'xls', 'xlsx', 'pdf']
@@ -1026,7 +1029,11 @@ def dataColumnSettingAdd(request):
 
 # View to edit an existing data column setting
 def dataColumnSettingEdit(request, id):
-    setting = DataColumnSetting.objects.get(id)
+    try:
+        setting = DataColumnSettings.objects.get(id=id)
+    except DataColumnSettings.DoesNotExist:
+        return render(request, '404.html', status=404)  # Handle non-existent ID gracefully
+    
     if request.method == 'POST':
         form = DataColumnSettingForm(request.POST, instance=setting)
         if form.is_valid():
@@ -1034,7 +1041,10 @@ def dataColumnSettingEdit(request, id):
             return redirect('data-column-setting')  # Redirect to the list view
     else:
         form = DataColumnSettingForm(instance=setting)
+    
     return render(request, 'settings/datacolumn-setting/edit.html', {'form': form})
+
+
 #Company Management
 def companySetting(request):
     if request.user.is_authenticated:
@@ -1055,20 +1065,79 @@ def companySettingEdit(request):
         return redirect('login')  # Redirect to login page if the user is not logged in
     
 #Pickel Managment
+# List View
 def pickelModelSetting(request):
     if request.user.is_authenticated:
-        return render(request, 'settings/pickel-model/index.html')
+        settings = PickelModelSetting.objects.all()
+        return render(request, 'settings/pickel-model/index.html', {'settings': settings})
     else:
         return redirect('login')  # Redirect to login page if the user is not logged in
-    
+
+# Add View
+@csrf_exempt
 def pickelModelSettingAdd(request):
     if request.user.is_authenticated:
+        if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            files = request.FILES.getlist('file_name')  # Retrieve multiple files if needed
+
+            uploaded_files = []  # Track successfully uploaded files
+            errors = []  # Track errors for each file
+
+            for uploaded_file in files:
+                file_extension = uploaded_file.name.split('.')[-1].lower()
+
+                # Validate file extension
+                if file_extension not in ALLOWED_EXTENSIONS:
+                    errors.append(f"Invalid file format: {uploaded_file.name}. Allowed: {', '.join(ALLOWED_EXTENSIONS)}")
+                    continue
+
+                # Generate unique file name and path
+                file_name = f"{int(time.time())}_{uploaded_file.name}"
+                file_path = os.path.join(MEDIA_DIR_PICKEL, file_name)
+                os.makedirs(MEDIA_DIR_PICKEL, exist_ok=True)
+
+                try:
+                    # Save file to disk
+                    with open(file_path, 'wb+') as dest:
+                        for chunk in uploaded_file.chunks():
+                            dest.write(chunk)
+
+                    # Save file details in the database
+                    pickel_setting = PickelModelSetting(
+                        file_name=file_path,
+                        fields=""  # Add logic to extract fields if applicable
+                    )
+                    pickel_setting.save()
+
+                    uploaded_files.append({
+                        'id': pickel_setting.id,
+                        'file_name': pickel_setting.file_name
+                    })
+
+                except Exception as e:
+                    errors.append(f"Error saving {uploaded_file.name}: {str(e)}")
+
+            # Return response
+            if uploaded_files:
+                return JsonResponse({'status': 'success', 'uploaded_files': uploaded_files, 'errors': errors})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'No files uploaded successfully.', 'errors': errors})
+
         return render(request, 'settings/pickel-model/add.html')
     else:
-        return redirect('login')  # Redirect to login page if the user is not logged in
-    
-def pickelModelSettingEdit(request):
+        return redirect('login')  # Redirect to login page if not authenticated
+
+# Edit View
+def pickelModelSettingEdit(request, id):
     if request.user.is_authenticated:
-        return render(request, 'settings/pickel-model/edit.html')
+        setting = get_object_or_404(PickelModelSetting, id=id)  # Fetch or 404 if not found
+        if request.method == 'POST':
+            form = PickelModelSettingForm(request.POST, instance=setting)
+            if form.is_valid():
+                form.save()
+                return redirect('pickel-model-list')  # Redirect to the list view
+        else:
+            form = PickelModelSettingForm(instance=setting)
+        return render(request, 'settings/pickel-model/edit.html', {'form': form})
     else:
         return redirect('login')  # Redirect to login page if the user is not logged in

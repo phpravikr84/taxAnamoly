@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'filemasters',
     'predictions',
     'datacolumnsettings',
+    'pickelmodelsetting',
 ]
 
 MIDDLEWARE = [

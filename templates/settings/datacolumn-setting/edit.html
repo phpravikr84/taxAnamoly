@@ -17,7 +17,7 @@
                 <div class="row">
                     <div class="col-md-4 mb-4">
                         <label for="fileType">File Type</label>
-                        <select id="financial-filename" class="form-select" name="file_name">
+                        <select id="financial-filename" class="form-control" name="file_name">
                             <option value="">Select Financial Filename</option>
                             <option value="gst" {% if form.file_name.value == "gst" %}selected{% endif %}>GST</option>
                             <option value="cit" {% if form.file_name.value == "cit" %}selected{% endif %}>CIT</option>
@@ -34,7 +34,7 @@
                         <label for="datacolumn-slug">Data Column Slug</label>
                         {{ form.column_slug }}
                     </div>
-                    <div class="col-md-6 form-check mb-4">
+                    <div class="col-md-4 form-check mb-4">
                         {{ form.status }}
                     </div>
                     <div class="col-md-12">

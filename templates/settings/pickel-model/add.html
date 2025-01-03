@@ -3,7 +3,9 @@
 <div class="container-fluid px-4">
     <h1 class="mt-4 custom-header">Pickel Model Setting</h1>
     <ol class="breadcrumb mb-4 custom-breadcrumb">
-        <li class="breadcrumb-item active">Pickel Model - Add</li>
+        <li class="breadcrumb-item">Settings</li>
+        <li class="breadcrumb-item">Pickel Model Setting</li>
+        <li class="breadcrumb-item active">Pickel Model - Upload</li>
     </ol>
     <div class="card mb-4">
         <div class="card-header">
@@ -11,20 +13,18 @@
             Pickel Model - Add
         </div>
         <div class="card-body">
-            <form method="post" action="">
+            <form method="post" action="{% url 'pickel-model-setting-add' %}"  enctype="multipart/form-data" class="d-flex align-items-center gap-3">
                 {% csrf_token %}
-                <div class="row">
-                    <div class="col-md-4 mb-4">
-                        <label for="pickel-filename">Pickel File Name</label>
-                        <input type="text" class="form-control" id="pickel_file_name" placeholder="Pickel File Name">
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <label for="pickel_file_path">Pickel File Path</label>
-                        <input type="file" class="form-control" id="pickel_file_path" placeholder="Pickel File Path">
-                    </div>
-                    <div class="cold-md-12 form-check mb-4">
-                        <button type="button" class="btn btn-warning" id="merge-btn">Submit Data Column</button>
-                    </div>
+                <div class="col-md-4 mb-4">
+                    <label for="pickel-file-name">Pickel File Name</label>
+                    <input name="file_name" type="text" class="form-control"/>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label for="pickel-file-path">Pickel File Path</label>
+                    <input id="file_path" type="file" name="file_path">
+                </div>
+                <div class="col-md-4 mb-4">
+                    <button type="submit" class="btn btn-primary mt-4">Upload Pickel Model</button>
                 </div>
             </form>
         </div>

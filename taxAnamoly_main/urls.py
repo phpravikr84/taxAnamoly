@@ -44,12 +44,12 @@ urlpatterns = [
     #Setting companySetting
     path('settings/datacolumn-setting/', views.dataColumnSettingList, name='data-column-setting'),
     path('settings/datacolumn-setting/add', views.dataColumnSettingAdd, name='data-column-setting-add'),
-    path('settings/datacolumn-setting/edit/<int:file_id>', views.dataColumnSettingEdit, name='data-column-setting-edit'),
+    path('settings/datacolumn-setting/edit/<int:id>', views.dataColumnSettingEdit, name='data-column-setting-edit'),
     path('settings/company/', views.companySetting, name='company-setting'),
     path('settings/company/add', views.companySettingAdd, name='company-setting-add'),
     path('settings/company/edit', views.companySettingEdit, name='company-setting-edit'),
     #Pickel
     path('settings/pickel-model/', views.pickelModelSetting, name='pickel-model-setting'),
     path('settings/pickel-model/add', views.pickelModelSettingAdd, name='pickel-model-setting-add'),
-    path('settings/pickel-model/edit', views.pickelModelSettingEdit, name='pickel-model-setting-edit'),
+    path('settings/pickel-model/edit/<int:id>', views.pickelModelSettingEdit, name='pickel-model-setting-edit'),
 ]
