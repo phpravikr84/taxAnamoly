@@ -42,7 +42,7 @@ MEDIA_DIR = 'media/csv/'
 MEDIA_DIR_MERGE = 'media/csv/merge/'
 PROCESS_DIRS = 'media/csv/processed/'
 PREDICTED_DIRS = 'media/csv/predict/'
-MEDIA_DIR_PICKEL = 'media/pickel_models/'
+MEDIA_DIR_PICKEL = os.path.join(settings.MEDIA_ROOT, 'pickel_models')  # Directory to store pickel files
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_DIR = os.path.join(BASE_DIR, 'static', 'model')
 ALLOWED_EXTENSIONS = ['csv', 'xls', 'xlsx', 'pdf']
@@ -1074,70 +1074,93 @@ def pickelModelSetting(request):
         return redirect('login')  # Redirect to login page if the user is not logged in
 
 # Add View
+
 @csrf_exempt
 def pickelModelSettingAdd(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            files = request.FILES.getlist('file_name')  # Retrieve multiple files if needed
+    if not request.user.is_authenticated:
+        return redirect('login')  # Redirect to login if not authenticated
 
-            uploaded_files = []  # Track successfully uploaded files
-            errors = []  # Track errors for each file
+    if request.method == 'POST':
+        uploaded_file = request.FILES.get('file_path')  # Retrieve the uploaded file
 
-            for uploaded_file in files:
-                file_extension = uploaded_file.name.split('.')[-1].lower()
+        if not uploaded_file:
+            return JsonResponse({'status': 'error', 'message': 'No file uploaded.'})
 
-                # Validate file extension
-                if file_extension not in ALLOWED_EXTENSIONS:
-                    errors.append(f"Invalid file format: {uploaded_file.name}. Allowed: {', '.join(ALLOWED_EXTENSIONS)}")
-                    continue
+        # Validate file extension
+        file_extension = uploaded_file.name.split('.')[-1].lower()
+        ALLOWED_EXTENSIONS = ['pkl']  # Allowed file extensions
+        if file_extension not in ALLOWED_EXTENSIONS:
+            return JsonResponse({'status': 'error', 'message': f"Invalid file format. Allowed: {', '.join(ALLOWED_EXTENSIONS)}"})
 
-                # Generate unique file name and path
-                file_name = f"{int(time.time())}_{uploaded_file.name}"
-                file_path = os.path.join(MEDIA_DIR_PICKEL, file_name)
-                os.makedirs(MEDIA_DIR_PICKEL, exist_ok=True)
+        # Generate unique file name and path
+        file_name = f"{int(time.time())}_{uploaded_file.name}"
+        file_path = os.path.join(MEDIA_DIR_PICKEL, file_name)
+        os.makedirs(MEDIA_DIR_PICKEL, exist_ok=True)
 
-                try:
-                    # Save file to disk
-                    with open(file_path, 'wb+') as dest:
-                        for chunk in uploaded_file.chunks():
-                            dest.write(chunk)
+        try:
+            # Save the file to disk
+            with open(file_path, 'wb+') as dest:
+                for chunk in uploaded_file.chunks():
+                    dest.write(chunk)
 
-                    # Save file details in the database
-                    pickel_setting = PickelModelSetting(
-                        file_name=file_path,
-                        fields=""  # Add logic to extract fields if applicable
-                    )
-                    pickel_setting.save()
+            # Save file details in the database
+            pickel_setting = PickelModelSetting(
+                file_name=request.POST.get('file_name'),
+                file_path=file_path  # Add logic to extract fields if applicable
+            )
+            pickel_setting.save()
 
-                    uploaded_files.append({
-                        'id': pickel_setting.id,
-                        'file_name': pickel_setting.file_name
-                    })
+            return JsonResponse({'status': 'success', 'file_id': pickel_setting.id, 'file_name': pickel_setting.file_name})
 
-                except Exception as e:
-                    errors.append(f"Error saving {uploaded_file.name}: {str(e)}")
 
-            # Return response
-            if uploaded_files:
-                return JsonResponse({'status': 'success', 'uploaded_files': uploaded_files, 'errors': errors})
-            else:
-                return JsonResponse({'status': 'error', 'message': 'No files uploaded successfully.', 'errors': errors})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': f"Error saving file: {str(e)}"})
 
-        return render(request, 'settings/pickel-model/add.html')
-    else:
-        return redirect('login')  # Redirect to login page if not authenticated
+    return render(request, 'settings/pickel-model/add.html')
 
 # Edit View
 def pickelModelSettingEdit(request, id):
-    if request.user.is_authenticated:
-        setting = get_object_or_404(PickelModelSetting, id=id)  # Fetch or 404 if not found
-        if request.method == 'POST':
-            form = PickelModelSettingForm(request.POST, instance=setting)
-            if form.is_valid():
-                form.save()
-                return redirect('pickel-model-list')  # Redirect to the list view
-        else:
-            form = PickelModelSettingForm(instance=setting)
-        return render(request, 'settings/pickel-model/edit.html', {'form': form})
-    else:
-        return redirect('login')  # Redirect to login page if the user is not logged in
+    if not request.user.is_authenticated:
+        return redirect('login')  # Redirect to login if not authenticated
+
+    setting = get_object_or_404(PickelModelSetting, id=id)  # Fetch the setting or raise 404
+
+    if request.method == 'POST':
+        file_path = request.FILES.get('file_path')  # Handle the uploaded file
+        if file_path:
+            # Validate file extension
+            file_extension = file_path.name.split('.')[-1].lower()
+            if file_extension not in ALLOWED_EXTENSIONS:
+                return render(request, 'settings/pickel-model/edit.html', {
+                    'form': setting,
+                    'error_message': f"Invalid file format. Allowed: {', '.join(ALLOWED_EXTENSIONS)}"
+                })
+
+            # Generate unique file name and path
+            new_file_name = f"{int(time.time())}_{file_path.name}"
+            new_file_path = os.path.join(MEDIA_DIR_PICKEL, new_file_name)
+            os.makedirs(MEDIA_DIR_PICKEL, exist_ok=True)
+
+            try:
+                # Save the new file
+                with open(new_file_path, 'wb+') as dest:
+                    for chunk in file_path.chunks():
+                        dest.write(chunk)
+
+                # Update the model instance
+                setting.file_name = new_file_name
+
+            except Exception as e:
+                return render(request, 'settings/pickel-model/edit.html', {
+                    'form': setting,
+                    'error_message': f"Error saving file: {str(e)}"
+                })
+
+        # Update additional fields
+        setting.file_name = request.POST.get('file_name', setting.file_name)
+        setting.file_path = request.POST.get('file_path', setting.file_path)
+        setting.save()
+
+        return redirect('pickel-model-list')  # Redirect after successful edit
+
+    return render(request, 'settings/pickel-model/edit.html', {'form': setting})

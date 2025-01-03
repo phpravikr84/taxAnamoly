@@ -11,7 +11,7 @@
             Pickel Model - Edit
         </div>
         <div class="card-body">
-            <form method="post" action="{% url 'pickel-model-setting-add' %}"  enctype="multipart/form-data" class="d-flex align-items-center gap-3">
+            <form method="post" action="{% url 'pickel-model-setting-edit' form.id %}"  enctype="multipart/form-data" class="d-flex align-items-center gap-3">
                 {% csrf_token %}
                     <div class="col-md-4 mb-4">
                         <label for="pickel-file-name">Pickel File Name</label>
@@ -22,7 +22,7 @@
                         <input id="file_path" type="file" name="file_path">
                     </div>
                     <div class="col-md-4 mb-4">
-                        <button type="submit" class="btn btn-primary mt-4">Upload Pickel Model</button>
+                        <button type="submit" id="addPickelForm" class="btn btn-primary mt-4">Upload Pickel Model</button>
                     </div>
             </form>
         </div>

@@ -221,4 +221,45 @@ $(document).ready(function () {
         });
     });
 
+    // Add Pickel file
+    $(document).on('submit', '#addPickelForm', function (e) {
+        e.preventDefault(); // Prevent default form submission
+    
+        const formData = new FormData(this);
+        $.ajax({
+            url: pickelfilesubmission,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.status === 'success') {
+                    Swal.fire({
+                        title: 'Uploaded!',
+                        text: response.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = response.redirect_url; // Redirect upon success
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An unexpected error occurred.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });    
+
 });
