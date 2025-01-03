@@ -5,6 +5,9 @@
     <ol class="breadcrumb mb-4 custom-breadcrumb">
         <li class="breadcrumb-item active">Pickel File Model</li>
     </ol>
+    <p class="d-flex justify-content-end mb-1">
+        <a href="{% url 'pickel-model-setting-add' %}" class="btn btn-success">Add Pickel</a>
+    </p>    
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-table me-1"></i>
@@ -16,7 +19,7 @@
                     <tr>
                       <th>ID</th>
                       <th>Pickel File Name</th>
-                      <th>Picketl File Upload Filepath</th>
+                      <th>Pickel File Path</th>
                       <th>Created At</th>
                       <th>Modified At</th>
                       <th>Action</th>
@@ -26,7 +29,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Pickel File Name</th>
-                        <th>Picketl File Upload Filepath</th>
+                        <th>Pickel File Path</th>
                         <th>Created At</th>
                         <th>Modified At</th>
                         <th>Action</th>
@@ -37,9 +40,11 @@
                     <tr>
                         <td>{{ setting.id }}</td>
                         <td>{{ setting.file_name }}</td>
-                        <td>{{ setting.fields }}</td>
+                        <td>{{ setting.file_path }}</td>
+			            <td>{{ setting.created_date }}</td>
+                        <td>{{ setting.modified_date }}</td>
                         <td>
-                            <a href="{% url 'pickel-model-edit' setting.id %}" class="btn btn-secondary">Edit</a>
+                            <a href="{% url 'pickel-model-setting-edit' setting.id %}" class="btn btn-primary btn-sm">Edit</a>
                         </td>
                     </tr>
                     {% endfor %}

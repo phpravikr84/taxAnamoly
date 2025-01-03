@@ -33,7 +33,7 @@
             </li>
             <li class="">
                 <a href="#anaLytics" data-toggle="collapse" aria-expanded="{% if request.path == '/dashboard/analytics/' %} true {% else %} false {% endif %}" 
-                class="dropdown-toggle {% if request.path == '/dashboard/analytics/' %} dr_active {% endif %}">Analytics</a>
+                class="dropdown-toggle {% if request.path == '/dashboard/analytics/' %} dr_active {% endif %}"><i class="fas fa-chart-area"></i>&nbsp;Analytics</a>
                 <ul class="collapse list-unstyled {% if request.path == '/dashboard/analytics/' %} show {% endif %}" id="anaLytics">
                     {% comment %} <li class="{% if request.path == '/analytics/predicted' %} active {% endif %}">
                         <a class="nav-link" href="#">Predicted Results</a>
@@ -43,26 +43,33 @@
                     </li>
                 </ul>
             </li>
-			<li class="{% if request.path == 'settings/company/' %} active {% endif %}">
-				<a class="fload" href="{% url 'company-setting' %}">
-                    <i class="fas fa-chart-area"></i>&nbsp; Company Setting
-                </a>
-			</li>
-			<li class="{% if request.path == 'settings/datacolumn-setting/' %} active {% endif %}">
-				<a class="fload" href="{% url 'data-column-setting' %}">
-                    <i class="fas fa-chart-area"></i>&nbsp; Data Column Settings
-                </a>
-			</li>
-			<li class="">
-				<a class="fload" href="#">
-                    <i class="fas fa-chart-area"></i>&nbsp; API Management
-                </a>
-			</li>
-			<li class="{% if request.path == 'settings/pickel-model/' %} active {% endif %}">
-				<a class="fload" href="{% url 'pickel-model-setting' %}">
-                    <i class="fas fa-chart-area"></i>&nbsp; Pickel Model Setting
-                </a>
-			</li>
+            <li class="">
+                <a href="#settings" data-toggle="collapse" aria-expanded="{% if request.path == '/settings/company/' or request.path == '/settings/datacolumn-setting/' or request.path == '/settings/pickel-model/'  %} true {% else %} false {% endif %}" 
+                class="dropdown-toggle {% if request.path == '/settings/company/' or request.path == '/settings/datacolumn-setting/' or request.path == '/settings/pickel-model/' %} dr_active {% endif %}"><i class="fas fa-cog"></i>&nbsp;Settings</a>
+                <ul class="collapse list-unstyled {% if request.path == '/settings/company/' or request.path == '/settings/datacolumn-setting/' or request.path == '/settings/pickel-model/'  %} show {% endif %}" id="settings">
+                    <li class="{% if request.path == '/settings/company/' %} active {% endif %}">
+                        <a class="fload" href="{% url 'company-setting' %}">
+                            Company
+                        </a>
+                    </li>
+                    <li class="{% if request.path == '/settings/datacolumn-setting/' %} active {% endif %}">
+                        <a class="fload" href="{% url 'data-column-setting' %}">
+                            Data Column
+                        </a>
+                    </li>
+                    <li class="">
+                        <a class="fload" href="#">
+                            API Management
+                        </a>
+                    </li>
+                    <li class="{% if request.path == '/settings/pickel-model/' %} active {% endif %}">
+                        <a class="fload" href="{% url 'pickel-model-setting' %}">
+                            Pickel Model
+                        </a>
+                    </li>
+                </ul>
+            </li>
+			
         </ul>
         
 
