@@ -13,7 +13,7 @@ class FilesMaster(models.Model):
     parent_file_id = models.CharField(max_length=255, null=True, blank=True)  # Changed to CharField
     status = models.IntegerField(choices=[(1, 'Success'), (2, 'Failure')])
     reason = models.TextField(null=True, blank=True)
-    file_state = models.IntegerField(default=1, choices=[
+    file_state = models.IntegerField(default=1, choices=[ 
         (1, 'Raw'),
         (2, 'Processed'),
         (3, 'Predicted'),

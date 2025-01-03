@@ -18,16 +18,16 @@
                 class="dropdown-toggle {% if request.path == '/data-management/raw-data/' or request.path == '/data-management/raw-data/upload/' or request.path == '/data-management/process-data/' or request.path == '/data-management/predected-data/' %} dr_active {% endif %}"><i class="fas fa-database"></i>&nbsp;Data Management</a>
                 <ul class="collapse list-unstyled {% if request.path == '/data-management/raw-data/' or request.path == '/data-management/raw-data/upload/' or request.path == '/data-management/process-data/' or request.path == '/data-management/predected-data/' %} show {% endif %}" id="dataMngmnt">
                     <li class="{% if request.path == '/data-management/raw-data/upload/' %} active {% endif %}">
-                        <a class="nav-link" href="{% url 'data-management-upload' %}">Upload Raw Data</a>
+                        <a class="nav-link" href="{% url 'data-management-upload' %}"><i class="fas fa-upload"></i>&nbsp;Upload Raw Data</a>
                     </li>
                     <li class="{% if request.path == '/data-management/raw-data/' %} active {% endif %}">
-                        <a class="nav-link" href="{% url 'data-management-view' %}">Raw Data Merged Files</a>
+                        <a class="nav-link" href="{% url 'data-management-view' %}"><i class="fas fa-file-excel"></i>&nbsp;Raw Data Merged Files</a>
                     </li>
                     <li class="{% if request.path == '/data-management/process-data/' %} active {% endif %}">
-                        <a class="nav-link" href="{% url 'data-management-processed' %}">Processed Data</a>
+                        <a class="nav-link" href="{% url 'data-management-processed' %}"><i class="fas fa-cogs"></i>&nbsp;Processed Data</a>
                     </li>
-                    <li class="{% if request.path == '/data-management/predected-data/' %} active {% endif %}">
-                        <a class="nav-link" href="{% url 'data-management-predicted-data' %}">Predicted Data</a>
+                    <li class="{% if request.path == '/data-management/predected-data/' or request.path == '/data-management/predected-data/view/' %} active {% endif %}">
+                        <a class="nav-link" href="{% url 'data-management-predicted-data' %}"><i class="fas fa-flag"></i>&nbsp;Predicted Data</a>
                     </li>
                 </ul>
             </li>
@@ -39,32 +39,32 @@
                         <a class="nav-link" href="#">Predicted Results</a>
                     </li> {% endcomment %}
                     <li class="{% if request.path == '/dashboard/analytics/' %} active {% endif %}">
-                        <a class="nav-link" href="{% url 'dashboard-analytics' %}">Fraud Analytics Report</a>
+                        <a class="nav-link" href="{% url 'dashboard-analytics' %}"><i class="fas fa-exclamation-triangle"></i>&nbsp;Fraud Analytics Report</a>
                     </li>
                 </ul>
             </li>
             <li class="">
-                <a href="#settings" data-toggle="collapse" aria-expanded="{% if request.path == '/settings/company/' or request.path == '/settings/datacolumn-setting/' or request.path == '/settings/pickel-model/'  %} true {% else %} false {% endif %}" 
-                class="dropdown-toggle {% if request.path == '/settings/company/' or request.path == '/settings/datacolumn-setting/' or request.path == '/settings/pickel-model/' %} dr_active {% endif %}"><i class="fas fa-cog"></i>&nbsp;Settings</a>
-                <ul class="collapse list-unstyled {% if request.path == '/settings/company/' or request.path == '/settings/datacolumn-setting/' or request.path == '/settings/pickel-model/'  %} show {% endif %}" id="settings">
+                <a href="#settings" data-toggle="collapse" aria-expanded="{% if request.path == '/settings/company/' or request.path == '/settings/datacolumn-setting/' or request.path == '/settings/pickel-model/' or request.path == '/settings/pickel-model/add'  %} true {% else %} false {% endif %}" 
+                class="dropdown-toggle {% if request.path == '/settings/company/' or request.path == '/settings/datacolumn-setting/' or request.path == '/settings/pickel-model/' or request.path == '/settings/pickel-model/add' %} dr_active {% endif %}"><i class="fas fa-cog"></i>&nbsp;Settings</a>
+                <ul class="collapse list-unstyled {% if request.path == '/settings/company/' or request.path == '/settings/datacolumn-setting/' or request.path == '/settings/pickel-model/' or request.path == '/settings/pickel-model/add'  %} show {% endif %}" id="settings">
                     <li class="{% if request.path == '/settings/company/' %} active {% endif %}">
                         <a class="fload" href="{% url 'company-setting' %}">
-                            Company
+                            <i class="far fa-building"></i>&nbsp;Company
                         </a>
                     </li>
                     <li class="{% if request.path == '/settings/datacolumn-setting/' %} active {% endif %}">
                         <a class="fload" href="{% url 'data-column-setting' %}">
-                            Data Column
+                            <i class="fas fa-table"></i>&nbsp;Data Column
                         </a>
                     </li>
                     <li class="">
                         <a class="fload" href="#">
-                            API Management
+                            <i class="fas fa-project-diagram"></i>&nbsp;API Management
                         </a>
                     </li>
-                    <li class="{% if request.path == '/settings/pickel-model/' %} active {% endif %}">
+                    <li class="{% if request.path == '/settings/pickel-model/' or request.path == '/settings/pickel-model/add' %} active {% endif %}">
                         <a class="fload" href="{% url 'pickel-model-setting' %}">
-                            Pickel Model
+                            <i class="fas fa-microchip"></i>&nbsp;Pickel Model
                         </a>
                     </li>
                 </ul>

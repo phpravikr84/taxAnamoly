@@ -3,12 +3,14 @@
 <div class="container-fluid px-4">
     <h1 class="mt-4 custom-header">Company Setting</h1>
     <ol class="breadcrumb mb-4 custom-breadcrumb">
-        <li class="breadcrumb-item active">Company</li>
+        <li class="breadcrumb-item"><a href="{% url 'company-setting' %}" class="text-dark">Company Settings</a></li>
+        <li class="breadcrumb-item active">Add Company</li>
     </ol>
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-table me-1"></i>
             Company - Add
+            <a href="{% url 'company-setting' %}"><button type="button" class="btn btn-primary" style="float: right;">Company List</button></a>
         </div>
         <div class="card-body">
             <form method="post" action="">
@@ -23,7 +25,7 @@
                         <input type="text" class="form-control" id="company_name" placeholder="Company Name">
                     </div>
                     <div class="cold-md-12 form-check mb-4">
-                        <button type="button" class="btn btn-warning" id="merge-btn">Submit Comapny</button>
+                        <button type="button" class="btn btn-warning" id="merge-btn" style="margin-top: 27px;">Submit Comapny</button>
                     </div>
                 </div>
             </form>
