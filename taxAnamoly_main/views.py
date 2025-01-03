@@ -94,7 +94,7 @@ def dashboard(request):
 def rawData(request):
     if request.user.is_authenticated:
         # Query FilesMaster with the necessary fields and join with the User model
-        files = FilesMaster.objects.filter(merge_status=True).select_related('User').values(
+        files = FilesMaster.objects.filter(merge_status=True,file_state=5).select_related('User').values(
             'id',
             'file_name',
             'file_path_rw',
